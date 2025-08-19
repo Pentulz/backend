@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENVIRONMENT=production
+      - APP_DEBUG=false
+    restart: unless-stopped

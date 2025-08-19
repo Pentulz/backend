@@ -1,5 +1,5 @@
 [project]
-name = "fastapi-backend"
+name = "pentulz-backend"
 version = "0.1.0"
 dependencies = [
   "fastapi",
