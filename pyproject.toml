@@ -1,8 +1,22 @@
-[project]
+[tool.poetry]
 name = "pentulz-backend"
 version = "0.1.0"
-dependencies = [
-  "fastapi",
-  "uvicorn[standard]",
-  "pydantic-settings",
-]
+description = ""
+authors = ["Pentulz Team"]
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+fastapi = "^0.116.1"
+uvicorn = {version="^0.35.0", extras=["standard"]}
+pydantic-settings = "^2.10.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+pytest-cov = "^6.0.0"
+httpx = "^0.28.1"
+anyio = "^4.10.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --cov=app --cov-report=term-missing"
