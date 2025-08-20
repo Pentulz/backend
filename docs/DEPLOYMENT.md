@@ -21,6 +21,7 @@ Images are built automatically and pushed to `ghcr.io/pentulz/pentulz-backend`.
 1. Make sure all tests/lint checks pass on your branch.
 2. Merge into `main`.
 3. Create a Git tag:
+
    ```bash
    git tag v1.0.0
    git push origin v1.0.0
@@ -84,7 +85,7 @@ services:
 Start the service with:
 
 ```bash
-docker compose up -d
+docker compose --profile prod up -d
 ```
 
 > For reproducible deployments, replace :latest with a specific version tag (e.g. :v1.0.1).
