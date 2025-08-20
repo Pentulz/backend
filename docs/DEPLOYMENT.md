@@ -89,3 +89,24 @@ docker compose --profile prod up -d
 ```
 
 > For reproducible deployments, replace :latest with a specific version tag (e.g. :v1.0.1).
+
+## 8. Dependency Management (Why Poetry & requirements.txt ?)
+
+- **Poetry** is used for local development and CI:
+
+  - Dependency management (`pyproject.toml`)
+  - Dev tools (`pytest`, `pylint`, etc.)
+  - Virtual environments
+
+- **requirements.txt** is used only inside Docker images:
+
+  - Faster builds (simple `pip install -r requirements.txt`)
+  - No need to install Poetry in production
+
+To export dependencies for Docker:
+
+```bash
+poetry export --only main --without-hashes -f requirements.txt -o requirements.txt
+```
+
+This keeps local development powerful with Poetry, while production images stay lightweight and fast.
