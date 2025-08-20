@@ -1,0 +1,41 @@
+services:
+  api:
+    image: ghcr.io/pentulz/pentulz-backend:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+    # --- DEV profile
+    profiles: ["dev"]
+    volumes:
+      - .:/app
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0 --port 8000 --reload
+
+  api-prod:
+    image: ghcr.io/pentulz/pentulz-backend:latest
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0 --port 8000 --workers 4
+    profiles: ["prod"]
