@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Deps runtime
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount=type=cache,id=python-pip-cache,target=/root/.cache/pip \
     python -m pip install --upgrade pip && pip install -r requirements.txt
 
 # Code
