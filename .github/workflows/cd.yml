@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: pentulz/pentulz-backend
+  IMAGE_NAME: pentulz/backend
   PYTHON_VERSION: "3.13"
 
 jobs:
@@ -43,6 +43,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: "1.8.3"
+      - name: Export runtime requirements
+        run: poetry export --only main --without-hashes -f requirements.txt -o requirements.txt
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Login to GHCR
@@ -50,7 +60,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.AUTH_TOKEN }}
 
       - name: Docker metadata
         id: meta
@@ -58,10 +68,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=tag        # vX.Y.Z
+            type=ref,event=tag
             type=raw,value=latest
-          labels: |
-            org.opencontainers.image.source=${{ github.repositoryUrl }}
 
       - name: Build & Push (multi-arch)
         uses: docker/build-push-action@v6

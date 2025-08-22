@@ -2,23 +2,20 @@ FROM python:3.13-slim AS base
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 WORKDIR /app
 
-# --- Deps (cache-friendly)
-COPY pyproject.toml poetry.lock* ./
-RUN python -m pip install --upgrade pip \
- && pip install poetry \
- && poetry config virtualenvs.create false \
- && poetry install --only main --no-interaction --no-ansi --no-root
+# Deps runtime
+COPY requirements.txt .
+RUN --mount=type=cache,id=s/d98d625d-e34c-4ab8-a5d5-0b58405815f8-/root/.cache/pip,target=/root/.cache/pip \
+    python -m pip install --upgrade pip && pip install -r requirements.txt
 
-# --- Code
+# Code
 COPY app ./app
 
-# --- Dev (reload, deps dev)
+# Dev
 FROM base AS dev
-RUN poetry install --with dev --no-interaction --no-ansi
 EXPOSE 8000
 CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000","--reload"]
 
-# --- Prod
+# Prod
 FROM base AS prod
 EXPOSE 8000
 CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000","--workers","4"]
