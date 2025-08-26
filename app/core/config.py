@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     environment: str = "dev"
     debug: bool = False
 
+    # API
+    API_PREFIX: str = "/api/v1"
+
     DATABASE_HOST: str = "database"  # Same as service name
     DATABASE_PORT: int = 5432
     DATABASE_USER: str = "postgres"
