@@ -2,12 +2,14 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+
 @router.get("/agents")
 async def get_agents():
     """
     Get list of all agents
     """
     return {"status": "ok"}
+
 
 @router.get("/agents/{agent_id}")
 async def get_agent(agent_id: str):
@@ -16,6 +18,7 @@ async def get_agent(agent_id: str):
     """
     return {"status": "ok"}
 
+
 @router.get("/agents/{agent_id}/jobs")
 async def get_agent_jobs(agent_id: str):
     """
@@ -23,10 +26,18 @@ async def get_agent_jobs(agent_id: str):
     """
     return {"status": "ok"}
 
-@router.post("/agents/{agent_id}/capabilities")
+
+@router.post("/agents/{agent_id}")
 async def create_agent_capabilities(agent_id: str):
     """
-    Create capabilities for an agent
+    Create an agent
     """
     return {"status": "ok"}
 
+
+@router.patch("/agents/{agent_id}")
+async def create_agent_capabilities(agent_id: str):
+    """
+    Update an agent (usually, update its capabilities)
+    """
+    return {"status": "ok"}
