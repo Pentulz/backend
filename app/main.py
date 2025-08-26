@@ -5,7 +5,7 @@ from fastapi import FastAPI
 
 from app.core.config import get_settings
 from app.core.database import database
-from app.api.v1 import health
+from app.api.v1 import agents, health, jobs, reports, system
 
 # Configure logging
 logging.basicConfig(
@@ -54,7 +54,11 @@ app = FastAPI(
 )
 
 # Include routers
-app.include_router(health.router, prefix="/api/v1", tags=["Health"])
+app.include_router(system.router, prefix=settings.API_PREFIX, tags=["System"])
+app.include_router(health.router, prefix=settings.API_PREFIX, tags=["Health"])
+app.include_router(jobs.router, prefix=settings.API_PREFIX, tags=["Jobs"])
+app.include_router(reports.router, prefix=settings.API_PREFIX, tags=["Reports"])
+app.include_router(agents.router, prefix=settings.API_PREFIX, tags=["Agents"])
 
 
 @app.get("/", tags=["Root"])
