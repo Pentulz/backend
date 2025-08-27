@@ -1,0 +1,67 @@
+-- Platform enum
+CREATE TYPE platform_type AS ENUM ('WINDOWS', 'MACOS', 'LINUX');
+
+-- Agents table
+CREATE TABLE agents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    hostname TEXT NOT NULL,
+    platform platform_type NOT NULL,
+    available_tools JSONB NOT NULL,
+    last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Jobs table  
+CREATE TABLE jobs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    agent_id UUID REFERENCES agents(id) ON DELETE SET NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    action JSONB NOT NULL,
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Reports table
+CREATE TABLE reports (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    results JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Junction table for many-to-many between jobs and reports
+CREATE TABLE reports_jobs (
+    job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
+    report_id UUID REFERENCES reports(id) ON DELETE CASCADE,
+    PRIMARY KEY (job_id, report_id)
+);
+
+-- Indexes for performance
+CREATE INDEX idx_agents_last_seen ON agents(last_seen_at);
+CREATE INDEX idx_agents_platform ON agents(platform);
+CREATE INDEX idx_jobs_agent_id ON jobs(agent_id);
+CREATE INDEX idx_jobs_created_at ON jobs(created_at);
+CREATE INDEX idx_reports_created_at ON reports(created_at);
+CREATE INDEX idx_reports_jobs_job_id ON reports_jobs(job_id);
+CREATE INDEX idx_reports_jobs_report_id ON reports_jobs(report_id);
+
+-- Views for computed status
+CREATE VIEW jobs_with_status AS
+SELECT 
+    *,
+    CASE 
+        WHEN completed_at IS NOT NULL THEN 'completed'
+        WHEN started_at IS NOT NULL THEN 'running'
+        ELSE 'pending'
+    END AS status
+FROM jobs;
+
+CREATE VIEW agents_with_status AS
+SELECT 
+    *,
+    CASE 
+        WHEN last_seen_at > (CURRENT_TIMESTAMP - INTERVAL '5 minutes') THEN 'online'
+        ELSE 'offline'
+    END AS status
+FROM agents;
