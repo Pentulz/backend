@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.v1 import agents, health, jobs, reports, system
 from app.core.config import get_settings
 from app.core.database import database
-from app.api.v1 import agents, health, jobs, reports, system
 
 # Configure logging
 logging.basicConfig(

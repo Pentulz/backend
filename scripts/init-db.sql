@@ -5,8 +5,10 @@ CREATE TYPE platform_type AS ENUM ('WINDOWS', 'MACOS', 'LINUX');
 CREATE TABLE agents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     hostname TEXT NOT NULL,
+    description TEXT,
     platform platform_type NOT NULL,
     available_tools JSONB NOT NULL,
+    token TEXT NOT NULL,
     last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -18,6 +20,7 @@ CREATE TABLE jobs (
     name TEXT NOT NULL,
     description TEXT,
     action JSONB NOT NULL,
+    results JSONB,
     started_at TIMESTAMP,
     completed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -45,23 +48,3 @@ CREATE INDEX idx_jobs_created_at ON jobs(created_at);
 CREATE INDEX idx_reports_created_at ON reports(created_at);
 CREATE INDEX idx_reports_jobs_job_id ON reports_jobs(job_id);
 CREATE INDEX idx_reports_jobs_report_id ON reports_jobs(report_id);
-
--- Views for computed status
-CREATE VIEW jobs_with_status AS
-SELECT 
-    *,
-    CASE 
-        WHEN completed_at IS NOT NULL THEN 'completed'
-        WHEN started_at IS NOT NULL THEN 'running'
-        ELSE 'pending'
-    END AS status
-FROM jobs;
-
-CREATE VIEW agents_with_status AS
-SELECT 
-    *,
-    CASE 
-        WHEN last_seen_at > (CURRENT_TIMESTAMP - INTERVAL '5 minutes') THEN 'online'
-        ELSE 'offline'
-    END AS status
-FROM agents;
