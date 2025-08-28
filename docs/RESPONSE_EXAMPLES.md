@@ -249,3 +249,24 @@ Here are some examples of the responses you can expect from the API.
     }
 }
 ```
+
+## Error Responses
+
+```json
+{
+    "error": {
+        "status": "400",
+        "title": "Bad Request",
+        "detail": "Invalid job id"
+    }
+}
+
+{
+    "error": {
+        "status": "400",
+        "title": "Bad Request",
+        "detail": "Invalid agent id"
+    }
+}
+```
+
