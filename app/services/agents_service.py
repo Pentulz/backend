@@ -42,8 +42,12 @@ class AgentsService:
 
         return new_agent
 
-    async def get_jobs_by_agent_id(self, agent_id: str) -> List[Jobs]:
+    async def get_jobs_by_agent_id(self, agent_id: str, completed: bool = False) -> List[Jobs]:
         query = select(Jobs).where(Jobs.agent_id == agent_id)
+        if completed:
+            query = query.where(Jobs.completed_at.isnot(None))
+        else:
+            query = query.where(Jobs.completed_at.is_(None))
         result = await self.db.execute(query)
         return result.scalars().all()
 

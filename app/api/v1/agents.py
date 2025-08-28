@@ -150,18 +150,21 @@ async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/agents/{agent_id}/jobs")
-async def get_agent_jobs(agent_id: str, db: AsyncSession = Depends(get_db)):
+async def get_agent_jobs(agent_id: str, completed: bool = False, db: AsyncSession = Depends(get_db)):
     """
-    Get jobs for an agent
+    Get jobs for an agent if query params ?completed=false, return only not completed jobs
+    Example:
+    - GET http://localhost:8000/api/v1/agents/550e8400-e29b-41d4-a716-446655440001/jobs?completed=false
+    - GET http://localhost:8000/api/v1/agents/550e8400-e29b-41d4-a716-446655440001/jobs?completed=true
     """
     if not cast_uuid(agent_id):
         return create_error_response("400", "Bad Request", "Invalid agent id", 400)
 
     agent_service = AgentsService(db)
-    jobs = await agent_service.get_jobs_by_agent_id(agent_id)
+    jobs = await agent_service.get_jobs_by_agent_id(agent_id, completed)
 
     if not jobs:
-        return create_error_response("404", "Not Found", "No jobs found", 404)
+        return create_success_response_list("jobs", [])
 
     response = [
         Job(

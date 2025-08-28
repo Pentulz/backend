@@ -53,6 +53,9 @@ class JobsService:
         if job_update.completed_at is not None:
             job.completed_at = job_update.completed_at
         if job_update.results is not None:
+            
+            # TODO: Process results
+            
             job.results = job_update.results
 
         self.db.add(job)
