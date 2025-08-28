@@ -27,6 +27,7 @@ class AgentCreate(BaseModel):
     hostname: str
     description: str
 
+
 class AgentUpdate(BaseModel):
     hostname: Optional[str] = None
     description: Optional[str] = None

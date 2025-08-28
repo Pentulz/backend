@@ -1,13 +1,22 @@
 class ServiceException(Exception):
     """Base exception class for service layer"""
+
     pass
 
 
-class ResourceNotFound(ServiceException):
-    """Raised when a requested resource is not found"""
+class CreateError(ServiceException):
+    """Raised when a resource creation fails"""
+
     pass
 
 
-class ValidationError(ServiceException):
-    """Raised when validation fails"""
+class UpdateError(ServiceException):
+    """Raised when a resource update fails"""
+
+    pass
+
+
+class DeleteError(ServiceException):
+    """Raised when a resource deletion fails"""
+
     pass

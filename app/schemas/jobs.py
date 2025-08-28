@@ -17,7 +17,6 @@ class Job(BaseModel):
     results: Optional[dict] = None
 
 
-
 class JobCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -33,4 +32,3 @@ class JobUpdate(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     results: Optional[dict] = None
-    

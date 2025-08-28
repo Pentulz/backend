@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.exceptions import ResourceNotFound
+from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.schemas.jobs import Job, JobCreate, JobUpdate
 from app.schemas.response import (
     create_error_response,
@@ -48,22 +48,27 @@ async def create_job(job: JobCreate, db: AsyncSession = Depends(get_db)):
     Create a new job
     """
 
-    jobs_service = JobsService(db)
-    job = await jobs_service.create_job(job)
+    try:
+        jobs_service = JobsService(db)
+        job = await jobs_service.create_job(job)
 
-    response = Job(
-        id=job.id,
-        name=job.name,
-        action=job.action,
-        agent_id=job.agent_id,
-        description=job.description,
-        results=job.results,
-        started_at=job.started_at,
-        completed_at=job.completed_at,
-        created_at=job.created_at,
-    )
+        response = Job(
+            id=job.id,
+            name=job.name,
+            action=job.action,
+            agent_id=job.agent_id,
+            description=job.description,
+            results=job.results,
+            started_at=job.started_at,
+            completed_at=job.completed_at,
+            created_at=job.created_at,
+        )
 
-    return create_success_response("jobs", str(job.id), response.model_dump(mode="json"))
+        return create_success_response(
+            "jobs", str(job.id), response.model_dump(mode="json")
+        )
+    except CreateError as e:
+        return create_error_response("400", "Bad Request", str(e), 400)
 
 
 @router.get("/jobs/{job_id}")
@@ -93,7 +98,9 @@ async def get_job(job_id: str, db: AsyncSession = Depends(get_db)):
         created_at=job.created_at,
     )
 
-    return create_success_response("jobs", str(job.id), response.model_dump(mode="json"))
+    return create_success_response(
+        "jobs", str(job.id), response.model_dump(mode="json")
+    )
 
 
 @router.delete("/jobs/{job_id}")
@@ -106,22 +113,9 @@ async def delete_job(job_id: str, db: AsyncSession = Depends(get_db)):
 
     try:
         jobs_service = JobsService(db)
-        job = await jobs_service.delete_job(job_id)
-
-        response = Job(
-            id=job.id,
-            name=job.name,
-            action=job.action,
-            agent_id=job.agent_id,
-            description=job.description,
-            results=job.results,
-            started_at=job.started_at,
-            completed_at=job.completed_at,
-            created_at=job.created_at,
-        )
-
-        return create_success_response("jobs", str(job.id), response.model_dump(mode="json"))
-    except ResourceNotFound:
+        await jobs_service.delete_job(job_id)
+        return create_success_response("jobs", str(job_id), {"message": "Job deleted"})
+    except DeleteError:
         return create_error_response("404", "Not Found", "Job not found", 404)
 
 
@@ -133,7 +127,7 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
 
     if not cast_uuid(job_id):
         return create_error_response("400", "Bad Request", "Invalid job id", 400)
-    
+
     try:
         jobs_service = JobsService(db)
         job = await jobs_service.update_job(job_id, job)
@@ -150,6 +144,8 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
             created_at=job.created_at,
         )
 
-        return create_success_response("jobs", str(job.id), response.model_dump(mode="json"))
-    except ResourceNotFound:
+        return create_success_response(
+            "jobs", str(job.id), response.model_dump(mode="json")
+        )
+    except UpdateError:
         return create_error_response("404", "Not Found", "Job not found", 404)

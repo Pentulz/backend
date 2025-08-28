@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.exceptions import ResourceNotFound
+from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.schemas.agents import Agent, AgentCreate, AgentUpdate
 from app.schemas.jobs import Job
 from app.schemas.response import (
@@ -23,7 +23,7 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
     agents = await agent_service.get_agents()
 
     if not agents:
-        return create_error_response("404", "Not Found", "No agents found", 404)
+        return create_success_response_list("agents", [])
 
     response = [
         Agent(
@@ -41,8 +41,11 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
 
     return create_success_response_list("agents", response)
 
+
 @router.patch("/agents/{agent_id}")
-async def update_agent(agent_id: str, agent: AgentUpdate, db: AsyncSession = Depends(get_db)):
+async def update_agent(
+    agent_id: str, agent: AgentUpdate, db: AsyncSession = Depends(get_db)
+):
     """
     Update an agent
     """
@@ -63,9 +66,13 @@ async def update_agent(agent_id: str, agent: AgentUpdate, db: AsyncSession = Dep
             last_seen_at=agent.last_seen_at,
             created_at=agent.created_at,
         )
-        return create_success_response("agents", str(agent.id), updated_agent.model_dump(mode="json"))
-    except ResourceNotFound:
-        return create_error_response("404", "Not Found", "Agent not found", 404)
+
+        return create_success_response(
+            "agents", str(agent.id), updated_agent.model_dump(mode="json")
+        )
+
+    except UpdateError as e:
+        return create_error_response("400", "Bad Request", str(e), 400)
 
 
 @router.get("/agents/{agent_id}")
@@ -104,21 +111,26 @@ async def create_agent(agent: AgentCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a new agent
     """
-    agent_service = AgentsService(db)
-    new_agent = await agent_service.create_agent(agent)
+    try:
+        agent_service = AgentsService(db)
+        new_agent = await agent_service.create_agent(agent)
 
-    response = Agent(
-        id=new_agent.id,
-        hostname=new_agent.hostname,
-        description=new_agent.description,
-        platform=new_agent.platform,
-        available_tools=new_agent.available_tools,
-        token=new_agent.token,
-        last_seen_at=new_agent.last_seen_at,
-        created_at=new_agent.created_at,
-    )
+        response = Agent(
+            id=new_agent.id,
+            hostname=new_agent.hostname,
+            description=new_agent.description,
+            platform=new_agent.platform,
+            available_tools=new_agent.available_tools,
+            token=new_agent.token,
+            last_seen_at=new_agent.last_seen_at,
+            created_at=new_agent.created_at,
+        )
 
-    return create_success_response("agents", str(new_agent.id), response.model_dump(mode="json"))
+        return create_success_response(
+            "agents", str(new_agent.id), response.model_dump(mode="json")
+        )
+    except CreateError as e:
+        return create_error_response("400", "Bad Request", str(e), 400)
 
 
 @router.delete("/agents/{agent_id}")
@@ -131,26 +143,19 @@ async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
 
     try:
         agent_service = AgentsService(db)
-        agent = await agent_service.delete_agent(agent_id)
-        
-        response = Agent(
-            id=agent.id,
-            hostname=agent.hostname,
-            description=agent.description,
-            platform=agent.platform,
-            available_tools=agent.available_tools,
-            token=agent.token,
-            last_seen_at=agent.last_seen_at,
-            created_at=agent.created_at,
+        await agent_service.delete_agent(agent_id)
+
+        return create_success_response(
+            "agents", str(agent_id), {"message": "Agent deleted"}
         )
-        
-        return create_success_response("agents", str(agent.id), response.model_dump(mode="json"))
-    except ResourceNotFound:
+    except DeleteError:
         return create_error_response("404", "Not Found", "Agent not found", 404)
 
 
 @router.get("/agents/{agent_id}/jobs")
-async def get_agent_jobs(agent_id: str, completed: bool = False, db: AsyncSession = Depends(get_db)):
+async def get_agent_jobs(
+    agent_id: str, completed: bool = False, db: AsyncSession = Depends(get_db)
+):
     """
     Get jobs for an agent if query params ?completed=false, return only not completed jobs
     Example:
@@ -182,5 +187,3 @@ async def get_agent_jobs(agent_id: str, completed: bool = False, db: AsyncSessio
     ]
 
     return create_success_response_list("jobs", response)
-
-

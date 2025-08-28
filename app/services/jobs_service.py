@@ -1,9 +1,10 @@
 from typing import List, Optional
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import ResourceNotFound
+from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.jobs import Jobs
 from app.schemas.jobs import JobCreate, JobUpdate
 
@@ -23,6 +24,12 @@ class JobsService:
         return result.scalar_one_or_none()
 
     async def create_job(self, job: JobCreate) -> Jobs:
+        if not job.name:
+            raise CreateError("Name is required")
+
+        if not job.action:
+            raise CreateError("Action is required")
+
         new_job = Jobs(
             name=job.name,
             action=job.action,
@@ -30,15 +37,18 @@ class JobsService:
             description=job.description,
         )
 
-        self.db.add(new_job)
-        await self.db.commit()
+        try:
+            self.db.add(new_job)
+            await self.db.commit()
+        except IntegrityError as e:
+            raise CreateError(f"Failed to create job: {e}") from e
 
         return new_job
 
     async def update_job(self, job_id: str, job_update: JobUpdate) -> Jobs:
         job = await self.get_job_by_id(job_id)
         if not job:
-            raise ResourceNotFound("Job not found")
+            raise UpdateError("Job not found")
 
         if job_update.name is not None:
             job.name = job_update.name
@@ -53,22 +63,23 @@ class JobsService:
         if job_update.completed_at is not None:
             job.completed_at = job_update.completed_at
         if job_update.results is not None:
-            
-            # TODO: Process results
-            
             job.results = job_update.results
 
-        self.db.add(job)
-        await self.db.commit()
+        try:
+            self.db.add(job)
+            await self.db.commit()
+        except IntegrityError as e:
+            raise UpdateError(f"Failed to update job: {e}") from e
 
         return job
 
-    async def delete_job(self, job_id: str) -> Jobs:
+    async def delete_job(self, job_id: str) -> None:
         job = await self.get_job_by_id(job_id)
         if not job:
-            raise ResourceNotFound("Job not found")
+            raise DeleteError("Job not found")
 
-        await self.db.delete(job)
-        await self.db.commit()
-
-        return job
+        try:
+            await self.db.delete(job)
+            await self.db.commit()
+        except IntegrityError as e:
+            raise DeleteError(f"Failed to delete job: {e}") from e

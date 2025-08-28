@@ -10,9 +10,9 @@ async def get_tools():
     """
     Get list of all supported penetration testing tools
     """
-    
+
     # TODO : Get tools from backend
-    
+
     tools = [
         {
             "id": "tool1",
@@ -39,5 +39,5 @@ async def get_tools():
             "version_arg": "--version",
         },
     ]
-     
+
     return create_success_response_list("tools", tools)

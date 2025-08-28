@@ -2,9 +2,10 @@ import uuid
 from typing import List, Optional
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import ResourceNotFound
+from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.agents import Agents
 from app.models.jobs import Jobs
 from app.schemas.agents import AgentCreate, AgentUpdate
@@ -24,7 +25,19 @@ class AgentsService:
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_agent_by_hostname(self, hostname: str) -> Optional[Agents]:
+        query = select(Agents).where(Agents.hostname == hostname)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
     async def create_agent(self, agent: AgentCreate) -> Agents:
+
+        if not agent.hostname:
+            raise CreateError("Hostname is required")
+
+        if await self.get_agent_by_hostname(agent.hostname):
+            raise CreateError("Agent with this hostname already exists")
+
         # Generate token
         token = str(uuid.uuid4())
 
@@ -37,12 +50,16 @@ class AgentsService:
             token=token,
         )
 
-        self.db.add(new_agent)
-        await self.db.commit()
+        try:
+            self.db.add(new_agent)
+            await self.db.commit()
+            return new_agent
+        except IntegrityError as e:
+            raise CreateError(f"Failed to create agent: {e}") from e
 
-        return new_agent
-
-    async def get_jobs_by_agent_id(self, agent_id: str, completed: bool = False) -> List[Jobs]:
+    async def get_jobs_by_agent_id(
+        self, agent_id: str, completed: bool = False
+    ) -> List[Jobs]:
         query = select(Jobs).where(Jobs.agent_id == agent_id)
         if completed:
             query = query.where(Jobs.completed_at.isnot(None))
@@ -54,7 +71,7 @@ class AgentsService:
     async def update_agent(self, agent_id: str, agent_update: AgentUpdate) -> Agents:
         agent = await self.get_agent_by_id(agent_id)
         if not agent:
-            raise ResourceNotFound("Agent not found")
+            raise UpdateError("Agent not found")
 
         if agent_update.hostname is not None:
             agent.hostname = agent_update.hostname
@@ -69,17 +86,19 @@ class AgentsService:
         if agent_update.last_seen_at is not None:
             agent.last_seen_at = agent_update.last_seen_at
 
-        self.db.add(agent)
-        await self.db.commit()
+        try:
+            self.db.add(agent)
+            await self.db.commit()
+        except IntegrityError as e:
+            raise UpdateError(f"Failed to update agent: {e}") from e
 
-        return agent
-    
-    async def delete_agent(self, agent_id: str) -> Agents:
+    async def delete_agent(self, agent_id: str) -> None:
         agent = await self.get_agent_by_id(agent_id)
         if not agent:
-            raise ResourceNotFound("Agent not found")
+            raise DeleteError("Agent not found")
 
-        await self.db.delete(agent)
-        await self.db.commit()
-
-        return agent
+        try:
+            await self.db.delete(agent)
+            await self.db.commit()
+        except IntegrityError as e:
+            raise DeleteError(f"Failed to delete agent: {e}") from e

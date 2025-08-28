@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import CreateError, DeleteError, UpdateError
+from app.schemas.reports import Report, ReportCreate, ReportUpdate
 from app.schemas.response import (
     create_error_response,
     create_success_response,
     create_success_response_list,
 )
-from app.schemas.reports import Report, ReportCreate, ReportUpdate
 from app.services.reports_service import ReportsService
 from app.utils.uuid import cast_uuid
 
@@ -39,12 +40,15 @@ async def create_report(report: ReportCreate, db: AsyncSession = Depends(get_db)
     Create a new report
     """
 
-    reports_service = ReportsService(db)
-    report = await reports_service.create_report(report)
+    try:
+        reports_service = ReportsService(db)
+        report = await reports_service.create_report(report)
 
-    return create_success_response(
-        "reports", str(report.id), report.model_dump(mode="json")
-    )
+        return create_success_response(
+            "reports", str(report.id), report.model_dump(mode="json")
+        )
+    except CreateError as e:
+        return create_error_response("400", "Bad Request", str(e), 400)
 
 
 @router.get("/reports/{report_id}")
@@ -69,20 +73,33 @@ async def get_report(report_id: str, db: AsyncSession = Depends(get_db)):
     return create_success_response(
         "reports", str(report.id), response.model_dump(mode="json")
     )
-    
+
+
 @router.patch("/reports/{report_id}")
-async def update_report(report_id: str, report_update: ReportUpdate, db: AsyncSession = Depends(get_db)):
+async def update_report(
+    report_id: str, report_update: ReportUpdate, db: AsyncSession = Depends(get_db)
+):
     """
     Update report by id
     """
-    
+
     if not cast_uuid(report_id):
         return create_error_response("400", "Bad Request", "Invalid report id", 400)
 
-    reports_service = ReportsService(db)
-    await reports_service.update_report(report_id, report_update)
+    try:
+        reports_service = ReportsService(db)
+        report = await reports_service.update_report(report_id, report_update)
 
-    return create_success_response("reports", str(report_id), "Report updated")
+        response = Report(
+            id=report.id, results=report.results, created_at=report.created_at
+        )
+
+        return create_success_response(
+            "reports", str(report.id), response.model_dump(mode="json")
+        )
+    except UpdateError:
+        return create_error_response("404", "Not Found", "Report not found", 404)
+
 
 @router.delete("/reports/{report_id}")
 async def delete_report(report_id: str, db: AsyncSession = Depends(get_db)):
@@ -93,8 +110,12 @@ async def delete_report(report_id: str, db: AsyncSession = Depends(get_db)):
     if not cast_uuid(report_id):
         return create_error_response("400", "Bad Request", "Invalid report id", 400)
 
-    reports_service = ReportsService(db)
-    await reports_service.delete_report(report_id)
+    try:
+        reports_service = ReportsService(db)
+        await reports_service.delete_report(report_id)
 
-    return create_success_response("reports", str(report_id), "Report deleted")
-
+        return create_success_response(
+            "reports", str(report_id), {"message": "Report deleted"}
+        )
+    except DeleteError:
+        return create_error_response("404", "Not Found", "Report not found", 404)
