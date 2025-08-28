@@ -52,7 +52,7 @@ INSERT INTO jobs (id, agent_id, name, description, action, started_at, completed
     'Scan internal network for open ports and services',
     '{"command": "nmap", "args": ["-sS", "-O", "192.168.1.0/24"], "timeout": 300}',
     NOW() - INTERVAL '2 hours',
-    NOW() - INTERVAL '1 hour 45 minutes',
+    NULL,
     NOW() - INTERVAL '3 hours'
 ),
 (
