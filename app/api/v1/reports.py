@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.schemas.reponse import (
+from app.schemas.response import (
     create_error_response,
     create_success_response,
     create_success_response_list,

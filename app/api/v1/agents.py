@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.schemas.agents import Agent
-from app.schemas.reponse import (
+from app.core.exceptions import ResourceNotFound
+from app.schemas.agents import Agent, AgentCreate, AgentUpdate
+from app.schemas.jobs import Job
+from app.schemas.response import (
     create_error_response,
     create_success_response,
     create_success_response_list,
@@ -39,6 +41,32 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
 
     return create_success_response_list("agents", response)
 
+@router.patch("/agents/{agent_id}")
+async def update_agent(agent_id: str, agent: AgentUpdate, db: AsyncSession = Depends(get_db)):
+    """
+    Update an agent
+    """
+    if not cast_uuid(agent_id):
+        return create_error_response("400", "Bad Request", "Invalid agent id", 400)
+
+    try:
+        agent_service = AgentsService(db)
+        agent = await agent_service.update_agent(agent_id, agent)
+
+        updated_agent = Agent(
+            id=agent.id,
+            hostname=agent.hostname,
+            description=agent.description,
+            platform=agent.platform,
+            available_tools=agent.available_tools,
+            token=agent.token,
+            last_seen_at=agent.last_seen_at,
+            created_at=agent.created_at,
+        )
+        return create_success_response("agents", str(agent.id), updated_agent.model_dump(mode="json"))
+    except ResourceNotFound:
+        return create_error_response("404", "Not Found", "Agent not found", 404)
+
 
 @router.get("/agents/{agent_id}")
 async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
@@ -71,25 +99,85 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     )
 
 
+@router.post("/agents")
+async def create_agent(agent: AgentCreate, db: AsyncSession = Depends(get_db)):
+    """
+    Create a new agent
+    """
+    agent_service = AgentsService(db)
+    new_agent = await agent_service.create_agent(agent)
+
+    response = Agent(
+        id=new_agent.id,
+        hostname=new_agent.hostname,
+        description=new_agent.description,
+        platform=new_agent.platform,
+        available_tools=new_agent.available_tools,
+        token=new_agent.token,
+        last_seen_at=new_agent.last_seen_at,
+        created_at=new_agent.created_at,
+    )
+
+    return create_success_response("agents", str(new_agent.id), response.model_dump(mode="json"))
+
+
+@router.delete("/agents/{agent_id}")
+async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Delete an agent
+    """
+    if not cast_uuid(agent_id):
+        return create_error_response("400", "Bad Request", "Invalid agent id", 400)
+
+    try:
+        agent_service = AgentsService(db)
+        agent = await agent_service.delete_agent(agent_id)
+        
+        response = Agent(
+            id=agent.id,
+            hostname=agent.hostname,
+            description=agent.description,
+            platform=agent.platform,
+            available_tools=agent.available_tools,
+            token=agent.token,
+            last_seen_at=agent.last_seen_at,
+            created_at=agent.created_at,
+        )
+        
+        return create_success_response("agents", str(agent.id), response.model_dump(mode="json"))
+    except ResourceNotFound:
+        return create_error_response("404", "Not Found", "Agent not found", 404)
+
+
 @router.get("/agents/{agent_id}/jobs")
-async def get_agent_jobs(agent_id: str):
+async def get_agent_jobs(agent_id: str, db: AsyncSession = Depends(get_db)):
     """
     Get jobs for an agent
     """
-    return {"status": "ok"}
+    if not cast_uuid(agent_id):
+        return create_error_response("400", "Bad Request", "Invalid agent id", 400)
+
+    agent_service = AgentsService(db)
+    jobs = await agent_service.get_jobs_by_agent_id(agent_id)
+
+    if not jobs:
+        return create_error_response("404", "Not Found", "No jobs found", 404)
+
+    response = [
+        Job(
+            id=job.id,
+            name=job.name,
+            action=job.action,
+            agent_id=job.agent_id,
+            description=job.description,
+            results=job.results,
+            started_at=job.started_at,
+            completed_at=job.completed_at,
+            created_at=job.created_at,
+        ).model_dump(mode="json")
+        for job in jobs
+    ]
+
+    return create_success_response_list("jobs", response)
 
 
-@router.post("/agents/{agent_id}")
-async def create_agent_capabilities(agent_id: str):
-    """
-    Create an agent
-    """
-    return {"status": "ok"}
-
-
-@router.patch("/agents/{agent_id}")
-async def create_agent_capabilities(agent_id: str):
-    """
-    Update an agent (usually, update its capabilities)
-    """
-    return {"status": "ok"}

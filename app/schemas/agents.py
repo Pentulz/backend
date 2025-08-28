@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -25,3 +26,11 @@ class Agent(BaseModel):
 class AgentCreate(BaseModel):
     hostname: str
     description: str
+
+class AgentUpdate(BaseModel):
+    hostname: Optional[str] = None
+    description: Optional[str] = None
+    platform: Optional[PlatformType] = None
+    available_tools: Optional[dict] = None
+    token: Optional[str] = None
+    last_seen_at: Optional[datetime] = None

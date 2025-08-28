@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +17,7 @@ class ReportsService:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def get_report_by_id(self, report_id: str) -> Reports:
+    async def get_report_by_id(self, report_id: str) -> Optional[Reports]:
         query = select(Reports).where(Reports.id == report_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()

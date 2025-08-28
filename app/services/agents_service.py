@@ -4,8 +4,10 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.exceptions import ResourceNotFound
 from app.models.agents import Agents
-from app.schemas.agents import AgentCreate
+from app.models.jobs import Jobs
+from app.schemas.agents import AgentCreate, AgentUpdate
 
 
 class AgentsService:
@@ -39,3 +41,41 @@ class AgentsService:
         await self.db.commit()
 
         return new_agent
+
+    async def get_jobs_by_agent_id(self, agent_id: str) -> List[Jobs]:
+        query = select(Jobs).where(Jobs.agent_id == agent_id)
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
+    async def update_agent(self, agent_id: str, agent_update: AgentUpdate) -> Agents:
+        agent = await self.get_agent_by_id(agent_id)
+        if not agent:
+            raise ResourceNotFound("Agent not found")
+
+        if agent_update.hostname is not None:
+            agent.hostname = agent_update.hostname
+        if agent_update.description is not None:
+            agent.description = agent_update.description
+        if agent_update.platform is not None:
+            agent.platform = agent_update.platform
+        if agent_update.available_tools is not None:
+            agent.available_tools = agent_update.available_tools
+        if agent_update.token is not None:
+            agent.token = agent_update.token
+        if agent_update.last_seen_at is not None:
+            agent.last_seen_at = agent_update.last_seen_at
+
+        self.db.add(agent)
+        await self.db.commit()
+
+        return agent
+    
+    async def delete_agent(self, agent_id: str) -> Agents:
+        agent = await self.get_agent_by_id(agent_id)
+        if not agent:
+            raise ResourceNotFound("Agent not found")
+
+        await self.db.delete(agent)
+        await self.db.commit()
+
+        return agent
