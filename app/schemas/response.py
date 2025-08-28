@@ -90,6 +90,6 @@ def create_error_response(
     )
     return JSONResponse(
         content=response.model_dump(),
-        media_type="application/vnd.api+json",
+        media_type="application/json",
         status_code=status_code,
     )
