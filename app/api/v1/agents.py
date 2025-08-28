@@ -56,6 +56,8 @@ async def update_agent(
         agent_service = AgentsService(db)
         agent = await agent_service.update_agent(agent_id, agent)
 
+        print(agent)
+
         updated_agent = Agent(
             id=agent.id,
             hostname=agent.hostname,
