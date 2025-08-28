@@ -42,7 +42,7 @@ class JobsService:
             await self.db.commit()
         except IntegrityError as e:
             raise CreateError(f"Failed to create job: {e}") from e
-        
+
         return new_job
 
     async def update_job(self, job_id: str, job_update: JobUpdate) -> Jobs:

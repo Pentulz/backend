@@ -69,7 +69,7 @@ class AgentsService:
         return result.scalars().all()
 
     async def update_agent(self, agent_id: str, agent_update: AgentUpdate) -> Agents:
-        
+
         agent = await self.get_agent_by_id(agent_id)
         if not agent:
             raise UpdateError("Agent not found")
@@ -92,7 +92,7 @@ class AgentsService:
             await self.db.commit()
         except IntegrityError as e:
             raise UpdateError(f"Failed to update agent: {e}") from e
-        
+
         return agent
 
     async def delete_agent(self, agent_id: str) -> None:
