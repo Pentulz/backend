@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import agents, health, jobs, reports, system
 from app.core.config import get_settings
@@ -54,6 +55,15 @@ app = FastAPI(
     lifespan=lifespan,
     description="Pentulz - Penetration Testing Orchestration Platform",
     version="0.1.0",
+)
+
+# Configure middlewares
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ALLOW_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include routers

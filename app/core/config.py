@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     # API
     API_PREFIX: str = "/api/v1"
 
+    # CORS
+    CORS_ALLOW_ORIGINS: list[str] = []
+
+    # DATABASE
     DATABASE_HOST: str = "database"  # Same as service name
     DATABASE_PORT: int = 5432
     DATABASE_USER: str = "postgres"
