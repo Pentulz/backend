@@ -57,6 +57,7 @@ Create a `.env` file in the project root:
 APP_APP_NAME=Pentulz Backend
 APP_ENVIRONMENT=production
 APP_DEBUG=false
+APP_CORS_ALLOW_ORIGINS='["https://pentulz.xyz"]'
 ```
 
 These values are loaded automatically by the app.
@@ -93,13 +94,11 @@ docker compose --profile prod up -d
 ## 8. Dependency Management (Why Poetry & requirements.txt ?)
 
 - **Poetry** is used for local development and CI:
-
   - Dependency management (`pyproject.toml`)
   - Dev tools (`pytest`, `pylint`, etc.)
   - Virtual environments
 
 - **requirements.txt** is used only inside Docker images:
-
   - Faster builds (simple `pip install -r requirements.txt`)
   - No need to install Poetry in production
 
