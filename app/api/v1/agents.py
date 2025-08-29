@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
 from app.core.exceptions import CreateError, DeleteError, UpdateError
-from app.models.agents import Agents
 from app.schemas.agents import Agent, AgentCreate, AgentUpdate
 from app.schemas.jobs import Job
 from app.schemas.response import (
@@ -22,8 +19,8 @@ router = APIRouter()
 @router.get("/agents")
 async def get_agents(db: AsyncSession = Depends(get_db)):
     """Get list of all agents with their jobs"""
-    result = await db.execute(select(Agents).options(selectinload(Agents.jobs)))
-    agents = result.scalars().all()
+    agents_service = AgentsService(db)
+    agents = await agents_service.get_agents()
 
     if not agents:
         return create_success_response_list("agents", [])
@@ -103,10 +100,8 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     if not cast_uuid(agent_id):
         return create_error_response("400", "Bad Request", "Invalid agent id", 400)
 
-    result = await db.execute(
-        select(Agents).options(selectinload(Agents.jobs)).where(Agents.id == agent_id)
-    )
-    agent = result.scalars().first()
+    agent_service = AgentsService(db)
+    agent = await agent_service.get_agent_by_id(agent_id)
 
     if not agent:
         return create_error_response("404", "Not Found", "Agent not found", 404)
