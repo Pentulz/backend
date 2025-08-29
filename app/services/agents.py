@@ -5,6 +5,7 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.agents import Agents
@@ -17,18 +18,19 @@ class AgentsService:
         self.db = db
 
     async def get_agents(self) -> List[Agents]:
-        query = select(Agents)
-        result = await self.db.execute(query)
+        result = await self.db.execute(select(Agents).options(selectinload(Agents.jobs)))
         return result.scalars().all()
 
     async def get_agent_by_id(self, agent_id: str) -> Optional[Agents]:
-        query = select(Agents).where(Agents.id == agent_id)
-        result = await self.db.execute(query)
+        result = await self.db.execute(
+            select(Agents).options(selectinload(Agents.jobs)).where(Agents.id == agent_id)
+        )
         return result.scalar_one_or_none()
 
     async def get_agent_by_hostname(self, hostname: str) -> Optional[Agents]:
-        query = select(Agents).where(Agents.hostname == hostname)
-        result = await self.db.execute(query)
+        result = await self.db.execute(
+            select(Agents).where(Agents.hostname == hostname)
+        )
         return result.scalar_one_or_none()
 
     async def create_agent(self, agent: AgentCreate) -> Agents:

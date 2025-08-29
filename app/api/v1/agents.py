@@ -10,7 +10,7 @@ from app.schemas.response import (
     create_success_response,
     create_success_response_list,
 )
-from app.services.agents_service import AgentsService
+from app.services.agents import AgentsService
 from app.utils.uuid import cast_uuid
 
 router = APIRouter()

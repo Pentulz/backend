@@ -9,7 +9,7 @@ from app.schemas.response import (
     create_success_response,
     create_success_response_list,
 )
-from app.services.jobs_service import JobsService
+from app.services.jobs import JobsService
 from app.utils.uuid import cast_uuid
 
 router = APIRouter()
