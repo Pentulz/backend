@@ -2,8 +2,9 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from app.schemas.jobs import Job
 from pydantic import BaseModel
+
+from app.schemas.jobs import Job
 
 
 class PlatformType(str, Enum):

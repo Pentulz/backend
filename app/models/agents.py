@@ -3,8 +3,8 @@ import enum
 import uuid
 from typing import List, Optional
 
-from sqlalchemy import DateTime, Enum, Index, PrimaryKeyConstraint, Text, Uuid, text
-from sqlalchemy.dialects.postgresql import JSONB, ENUM
+from sqlalchemy import DateTime, Index, PrimaryKeyConstraint, Text, Uuid, text
+from sqlalchemy.dialects.postgresql import ENUM, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base

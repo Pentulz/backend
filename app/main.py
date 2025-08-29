@@ -1,15 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.v1 import agents, health, jobs, reports, system
 from app.core.config import get_settings
 from app.core.database import database
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-from fastapi import APIRouter, Depends, Request
 
 # Configure logging
 logging.basicConfig(
@@ -73,10 +72,8 @@ app.include_router(jobs.router, prefix=settings.API_PREFIX, tags=["Jobs"])
 app.include_router(reports.router, prefix=settings.API_PREFIX, tags=["Reports"])
 app.include_router(agents.router, prefix=settings.API_PREFIX, tags=["Agents"])
 
-import json
 
-
-async def generic_error_handler(request: Request, exc: Exception):
+async def generic_error_handler(_request: Request, exc: Exception):
     """
     Catch-all exception handler that returns errors in the same JSON format
     """

@@ -1,11 +1,12 @@
-from datetime import timezone
-from app.models.agents import Agents
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
 from app.core.exceptions import CreateError, DeleteError, UpdateError
-from app.schemas.agents import Agent, AgentCreate, AgentUpdate, Tool
+from app.models.agents import Agents
+from app.schemas.agents import Agent, AgentCreate, AgentUpdate
 from app.schemas.jobs import Job
 from app.schemas.response import (
     create_error_response,
@@ -14,8 +15,6 @@ from app.schemas.response import (
 )
 from app.services.agents_service import AgentsService
 from app.utils.uuid import cast_uuid
-from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
 router = APIRouter()
 

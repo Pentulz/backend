@@ -1,4 +1,5 @@
 import uuid
+from datetime import timezone
 from typing import List, Optional
 
 from sqlalchemy import select
@@ -9,7 +10,6 @@ from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.agents import Agents
 from app.models.jobs import Jobs
 from app.schemas.agents import AgentCreate, AgentUpdate
-from datetime import datetime, timezone
 
 
 class AgentsService:
