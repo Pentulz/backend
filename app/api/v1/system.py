@@ -1,10 +1,40 @@
 from fastapi import APIRouter
 
+from app.schemas.response import create_success_response_list
+
 router = APIRouter()
+
 
 @router.get("/tools")
 async def get_tools():
     """
     Get list of all supported penetration testing tools
     """
-    return {"status": "ok"}
+
+    # TODO : Get tools from backend
+
+    tools = [
+        {
+            "cmd": "nmap",
+            "args": ["-sV", "127.0.0.1"],
+            "version_arg": "--version",
+        },
+        {
+            "cmd": "gobuster",
+            "args": [
+                "dir",
+                "-u",
+                "http://localhost",
+                "-w",
+                "/wordlists/common.txt",
+            ],
+            "version_arg": "--version",
+        },
+        {
+            "cmd": "tcpdump",
+            "args": ["-i", "eth0", "-c", "10"],
+            "version_arg": "--version",
+        },
+    ]
+
+    return create_success_response_list("tools", tools)

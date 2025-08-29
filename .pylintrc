@@ -3,7 +3,8 @@ disable=
     C0114,  ; missing module docstring
     C0115,  ; missing class docstring
     C0116,  ; missing function docstring
-    C0304   ; missing final newline
+    C0304,   ; missing final newline
+    R0903   ; too few public methods
 
 [FORMAT]
-max-line-length=100
+max-line-length=150
