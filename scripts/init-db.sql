@@ -4,10 +4,10 @@ CREATE TYPE platform_type AS ENUM ('WINDOWS', 'MACOS', 'LINUX');
 -- Agents table
 CREATE TABLE agents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    hostname TEXT NOT NULL,
+    hostname TEXT NULL,
     description TEXT,
-    platform platform_type NOT NULL,
-    available_tools JSONB NOT NULL,
+    platform platform_type NULL,
+    available_tools JSONB[] NULL,
     token TEXT NOT NULL,
     last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
