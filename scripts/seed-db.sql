@@ -1,18 +1,16 @@
 BEGIN;
 
--- Insert sample agents
+  -- Insert sample agents
 INSERT INTO agents (id, hostname, description, platform, available_tools, token, last_seen_at, created_at) VALUES 
 (
     '550e8400-e29b-41d4-a716-446655440001',
     'web-server-01',
     'Primary web server for production environment',
     'LINUX',
-    ARRAY[
-        '{"cmd": "nmap", "args": [], "version": "7.80"}'::jsonb,
-        '{"cmd": "curl", "args": [], "version": "7.68.0"}'::jsonb,
-        '{"cmd": "python", "args": [], "version": "3.8.10"}'::jsonb,
-        '{"cmd": "docker", "args": [], "version": "20.10.7"}'::jsonb
-    ],
+    '[{"cmd": "nmap", "args": [], "version": "7.80", "version_arg": "--version"},
+      {"cmd": "curl", "args": [], "version": "7.68.0", "version_arg": "--version"},
+      {"cmd": "python", "args": [], "version": "3.8.10", "version_arg": "--version"},
+      {"cmd": "docker", "args": [], "version": "20.10.7", "version_arg": "--version"}]'::jsonb,
     'tok_550e8400e29b41d4a716446655440001',
     NOW() - INTERVAL '5 minutes',
     NOW() - INTERVAL '2 days'
@@ -22,10 +20,8 @@ INSERT INTO agents (id, hostname, description, platform, available_tools, token,
     'db-server-01',
     'Database server for user data',
     'LINUX',
-    ARRAY[
-        '{"cmd": "psql", "args": [], "version": "16"}'::jsonb,
-        '{"cmd": "pgcli", "args": [], "version": "3.4.0"}'::jsonb
-    ],
+    '[{"cmd": "psql", "args": [], "version": "16", "version_arg": "--version"},
+      {"cmd": "pgcli", "args": [], "version": "3.4.0", "version_arg": "--version"}]'::jsonb,
     'tok_550e8400e29b41d4a716446655440002',
     NOW() - INTERVAL '1 hour',
     NOW() - INTERVAL '5 days'
@@ -35,7 +31,7 @@ INSERT INTO agents (id, hostname, description, platform, available_tools, token,
     NULL,
     'Development machine Windows 11',
     NULL,
-    NULL,
+    '[]'::jsonb,
     'tok_550e8400e29b41d4a716446655440003',
     NOW() - INTERVAL '30 minutes',
     NOW() - INTERVAL '1 day'
@@ -45,11 +41,12 @@ INSERT INTO agents (id, hostname, description, platform, available_tools, token,
     NULL,
     'MacBook Pro for iOS development',
     NULL,
-    NULL,
+    '[]'::jsonb,
     'tok_550e8400e29b41d4a716446655440004',
     NOW() - INTERVAL '2 hours',
     NOW() - INTERVAL '3 days'
 );
+
 
 
 -- Insert sample jobs (without results column first, we'll add it if it exists)

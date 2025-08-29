@@ -15,13 +15,11 @@ async def get_tools():
 
     tools = [
         {
-            "id": "tool1",
             "cmd": "nmap",
             "args": ["-sV", "127.0.0.1"],
             "version_arg": "--version",
         },
         {
-            "id": "tool2",
             "cmd": "gobuster",
             "args": [
                 "dir",
@@ -33,7 +31,6 @@ async def get_tools():
             "version_arg": "--version",
         },
         {
-            "id": "tool3",
             "cmd": "tcpdump",
             "args": ["-i", "eth0", "-c", "10"],
             "version_arg": "--version",

@@ -17,6 +17,7 @@ class Tool(BaseModel):
     cmd: str
     args: list[str] = []
     version: str | None
+    version_arg: str | None
 
 
 class Agent(BaseModel):
@@ -40,6 +41,6 @@ class AgentUpdate(BaseModel):
     hostname: str
     description: str
     platform: PlatformType
-    available_tools: list[Tool]
+    available_tools: list[Tool] | None
     token: str
     last_seen_at: UTCDatetime

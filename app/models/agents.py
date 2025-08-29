@@ -4,7 +4,7 @@ import uuid
 from typing import List, Optional
 
 from sqlalchemy import DateTime, Enum, Index, PrimaryKeyConstraint, Text, Uuid, text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, ENUM
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -29,7 +29,9 @@ class Agents(Base):
     )
     hostname: Mapped[str] = mapped_column(Text)
     description: Mapped[Optional[str]] = mapped_column(Text)
-    platform: Mapped[str] = mapped_column(Enum(PlatformType))
+    platform: Mapped[PlatformType] = mapped_column(
+        ENUM(PlatformType, name="platform_type", native_enum=True)
+    )
     available_tools: Mapped[dict] = mapped_column(JSONB)
     token: Mapped[str] = mapped_column(Text)
     last_seen_at: Mapped[Optional[datetime.datetime]] = mapped_column(

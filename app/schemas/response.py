@@ -65,17 +65,22 @@ def create_success_response_list(
 
     data = []
     for resource in resources:
+        resource_id = str(resource.get("id", ""))
+
         # Serialize each resource's attributes
         serialized_attributes = {
             k: _serialize_value(v) for k, v in resource.items() if k != "id"
         }
-        data.append(
-            {
-                "type": resource_type,
-                "id": str(resource["id"]),
-                "attributes": serialized_attributes,
-            }
-        )
+
+        res = {
+            "type": resource_type,
+            "attributes": serialized_attributes,
+        }
+
+        if resource_id:
+            res.update(id=resource_id)
+
+        data.append(res)
 
     return JSONResponse(content={"data": data}, media_type="application/json")
 
