@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
+from app.schemas.jobs import Job
+from app.schemas.utc_datetime import UTCDatetime
 from pydantic import BaseModel
 
 
@@ -12,15 +13,22 @@ class PlatformType(str, Enum):
     LINUX = "LINUX"
 
 
+class Tool(BaseModel):
+    cmd: str
+    args: list[str] = []
+    version: str | None
+
+
 class Agent(BaseModel):
     id: uuid.UUID
-    hostname: str
+    hostname: str | None
     description: str
-    platform: PlatformType
-    available_tools: dict
+    platform: PlatformType | None
+    available_tools: list[Tool] | None
     token: str
-    last_seen_at: datetime
-    created_at: datetime
+    last_seen_at: UTCDatetime
+    created_at: UTCDatetime
+    jobs: list[Job] = []
 
 
 class AgentCreate(BaseModel):
@@ -29,9 +37,9 @@ class AgentCreate(BaseModel):
 
 
 class AgentUpdate(BaseModel):
-    hostname: Optional[str] = None
-    description: Optional[str] = None
-    platform: Optional[PlatformType] = None
-    available_tools: Optional[dict] = None
-    token: Optional[str] = None
-    last_seen_at: Optional[datetime] = None
+    hostname: str
+    description: str
+    platform: PlatformType
+    available_tools: list[Tool]
+    token: str
+    last_seen_at: UTCDatetime

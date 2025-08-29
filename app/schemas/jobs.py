@@ -1,7 +1,7 @@
 import uuid
-from datetime import datetime
 from typing import Optional
 
+from app.schemas.utc_datetime import UTCDatetime
 from pydantic import BaseModel
 
 
@@ -11,9 +11,9 @@ class Job(BaseModel):
     description: Optional[str] = None
     agent_id: uuid.UUID
     action: dict
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    created_at: datetime
+    started_at: Optional[UTCDatetime] = None
+    completed_at: Optional[UTCDatetime] = None
+    created_at: UTCDatetime
     results: Optional[dict] = None
 
 
@@ -29,6 +29,6 @@ class JobUpdate(BaseModel):
     description: Optional[str] = None
     agent_id: Optional[uuid.UUID] = None
     action: Optional[dict] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: Optional[UTCDatetime] = None
+    completed_at: Optional[UTCDatetime] = None
     results: Optional[dict] = None

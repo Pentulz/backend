@@ -65,7 +65,6 @@ def create_success_response_list(
 
     data = []
     for resource in resources:
-
         # Serialize each resource's attributes
         serialized_attributes = {
             k: _serialize_value(v) for k, v in resource.items() if k != "id"
@@ -82,14 +81,19 @@ def create_success_response_list(
 
 
 def create_error_response(
-    status: str, title: str, detail: str, status_code: int = 400
+    status: str, title: str, detail: str | list[str], status_code: int = 400
 ) -> JSONResponse:
-    """Create an error response"""
-    response = JSONAPIErrorResponse(
-        error={"status": status, "title": title, "detail": detail}
-    )
+    """Create an error response conforming to JSON:API (array of errors)"""
+    # Ensure detail is a list of strings
+    if isinstance(detail, str):
+        detail = [detail]
+
+    response = {
+        "errors": [{"status": status, "title": title, "detail": d} for d in detail]
+    }
+
     return JSONResponse(
-        content=response.model_dump(),
+        content=response,
         media_type="application/json",
         status_code=status_code,
     )
