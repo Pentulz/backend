@@ -18,12 +18,16 @@ class AgentsService:
         self.db = db
 
     async def get_agents(self) -> List[Agents]:
-        result = await self.db.execute(select(Agents).options(selectinload(Agents.jobs)))
+        result = await self.db.execute(
+            select(Agents).options(selectinload(Agents.jobs))
+        )
         return result.scalars().all()
 
     async def get_agent_by_id(self, agent_id: str) -> Optional[Agents]:
         result = await self.db.execute(
-            select(Agents).options(selectinload(Agents.jobs)).where(Agents.id == agent_id)
+            select(Agents)
+            .options(selectinload(Agents.jobs))
+            .where(Agents.id == agent_id)
         )
         return result.scalar_one_or_none()
 

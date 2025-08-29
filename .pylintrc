@@ -1,10 +1,11 @@
 [MESSAGES CONTROL]
 disable=
-    C0114,  ; missing module docstring
-    C0115,  ; missing class docstring
-    C0116,  ; missing function docstring
-    C0304,   ; missing final newline
-    R0903   ; too few public methods
-
+    C0114,  # missing module docstring
+    C0115,  # missing class docstring
+    C0116,  # missing function docstring
+    C0304,   # missing final newline
+    R0903,   # too few public methods
+    R0401    # cyclic import for the moment, because in nmap.py we have a import of manager.py to test the tool
+    
 [FORMAT]
 max-line-length=150
