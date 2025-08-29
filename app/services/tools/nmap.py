@@ -11,10 +11,18 @@ class NmapTool(BaseTool):
     @property
     def name(self) -> str:
         return "nmap"
-
+    
     @property
-    def get_version_command(self) -> str:
-        return "nmap --version"
+    def description(self) -> str:
+        return "Nmap tool implementation"
+    
+    @property
+    def get_base_command(self) -> str:
+        return "nmap"
+    
+    @property
+    def get_version_arg(self) -> str:
+        return "--version"
 
     @property
     def command_templates(self) -> List[CommandTemplate]:

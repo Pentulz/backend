@@ -24,15 +24,19 @@ class ToolManager:
         for name, tool in self.tools.items():
             result.append(
                 {
-                    "name": name,
-                    "version_command": tool.get_version_command,
-                    "commands": [
-                        {
-                            "template": " ".join([cmd.base_command] + cmd.arguments),
-                            "description": cmd.description,
-                        }
-                        for cmd in tool.command_templates
-                    ],
+                    "type": "tools",
+                    "attributes": {
+                        "name": name,
+                        "cmd": tool.get_base_command,
+                        "version_arg": tool.get_version_arg,
+                        "variants": [
+                            {
+                                "args": cmd.arguments,
+                                "description": cmd.description,
+                            }
+                            for cmd in tool.command_templates
+                        ],
+                    },
                 }
             )
         return result

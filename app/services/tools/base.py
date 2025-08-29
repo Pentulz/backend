@@ -20,11 +20,24 @@ class BaseTool(ABC):
     @abstractmethod
     def name(self) -> str:
         pass
+    
+    @property
+    @abstractmethod
+    def description(self) -> str:
+        """Description of the tool"""
+        pass
+    
+    @property
+    @abstractmethod
+    def get_base_command(self) -> str:
+        """Base command for the tool"""
+        pass
 
     @property
     @abstractmethod
-    def get_version_command(self) -> str:
-        """Command to check if tool is available"""
+    def get_version_arg(self) -> str:
+        """Argument to check if tool is available"""
+        pass
 
     @property
     @abstractmethod
