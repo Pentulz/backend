@@ -1,4 +1,5 @@
 import datetime
+from time import timezone
 import uuid
 from typing import List, Optional
 
@@ -36,11 +37,19 @@ class Jobs(Base):
     agent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
     description: Mapped[Optional[str]] = mapped_column(Text)
     results: Mapped[Optional[dict]] = mapped_column(JSONB)
-    started_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    completed_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    # started_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    # completed_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        DateTime, server_default=text("CURRENT_TIMESTAMP")
+        DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")
+    )
+    started_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime(timezone=True)
+    )
+    completed_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+        DateTime(timezone=True)
     )
 
     agent: Mapped[Optional["Agents"]] = relationship("Agents", back_populates="jobs")  # type: ignore
-    report: Mapped[List["Reports"]] = relationship("Reports", secondary="reports_jobs", back_populates="job")  # type: ignore
+    report: Mapped[List["Reports"]] = relationship(
+        "Reports", secondary="reports_jobs", back_populates="job"
+    )  # type: ignore

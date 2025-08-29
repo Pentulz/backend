@@ -3,7 +3,6 @@ from datetime import datetime
 from enum import Enum
 
 from app.schemas.jobs import Job
-from app.schemas.utc_datetime import UTCDatetime
 from pydantic import BaseModel
 
 
@@ -27,8 +26,8 @@ class Agent(BaseModel):
     platform: PlatformType | None
     available_tools: list[Tool] | None
     token: str
-    last_seen_at: UTCDatetime
-    created_at: UTCDatetime
+    last_seen_at: datetime
+    created_at: datetime
     jobs: list[Job] = []
 
 
@@ -43,4 +42,4 @@ class AgentUpdate(BaseModel):
     platform: PlatformType
     available_tools: list[Tool] | None
     token: str
-    last_seen_at: UTCDatetime
+    last_seen_at: datetime

@@ -1,4 +1,5 @@
 import datetime
+from time import timezone
 import uuid
 from typing import List, Optional
 
@@ -21,7 +22,9 @@ class Reports(Base):
     )
     results: Mapped[dict] = mapped_column(JSONB)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        DateTime, server_default=text("CURRENT_TIMESTAMP")
+        DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")
     )
 
-    job: Mapped[List["Jobs"]] = relationship("Jobs", secondary="reports_jobs", back_populates="report")  # type: ignore
+    job: Mapped[List["Jobs"]] = relationship(
+        "Jobs", secondary="reports_jobs", back_populates="report"
+    )  # type: ignore
