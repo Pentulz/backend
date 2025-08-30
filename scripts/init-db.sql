@@ -4,13 +4,16 @@ CREATE TYPE platform_type AS ENUM ('WINDOWS', 'MACOS', 'LINUX');
 -- Agents table
 CREATE TABLE agents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
     hostname TEXT NULL,
     description TEXT,
     platform platform_type NULL,
     available_tools JSONB NULL,
     token TEXT NOT NULL,
-    last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_seen_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_agent_name UNIQUE (name),
+    CONSTRAINT unique_agent_hostname UNIQUE (hostname)
 );
 
 -- Jobs table  
@@ -21,9 +24,10 @@ CREATE TABLE jobs (
     description TEXT,
     action JSONB NOT NULL,
     results JSONB,
-    started_at TIMESTAMP,
-    completed_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    started_at TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_job_name UNIQUE (name)
 );
 
 -- Reports table
