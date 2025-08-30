@@ -35,8 +35,8 @@ class TsharkTool(BaseTool):
         return [
             CommandTemplate(
                 base_command="tshark",
-                arguments=["-i", "{interface}", "-c", "{count}"],
-                description="Live capture",
+                arguments=["-i", "{interface}", "-c", "{count}", "-a", "duration:{duration}"],
+                description="Live capture with duration limit",
                 argument_definitions=[
                     ArgumentDefinition(
                         name="interface",
@@ -51,13 +51,20 @@ class TsharkTool(BaseTool):
                         required=True,
                         description="Number of packets to capture",
                         placeholder="100"
+                    ),
+                    ArgumentDefinition(
+                        name="duration",
+                        type="number",
+                        required=True,
+                        description="Duration of capture in seconds",
+                        placeholder="60"
                     )
                 ]
             ),
             CommandTemplate(
                 base_command="tshark",
-                arguments=["-r", "{pcap_file}"],
-                description="Read PCAP file",
+                arguments=["-r", "{pcap_file}", "-a", "duration:{duration}"],
+                description="Read PCAP file with duration filter",
                 argument_definitions=[
                     ArgumentDefinition(
                         name="pcap_file",
@@ -65,13 +72,20 @@ class TsharkTool(BaseTool):
                         required=True,
                         description="Path to PCAP file to analyze",
                         placeholder="capture.pcap"
+                    ),
+                    ArgumentDefinition(
+                        name="duration",
+                        type="number",
+                        required=True,
+                        description="Duration to analyze from start in seconds",
+                        placeholder="300"
                     )
                 ]
             ),
             CommandTemplate(
                 base_command="tshark",
-                arguments=["-r", "{pcap_file}", "-Y", "{filter}"],
-                description="Read PCAP with filter",
+                arguments=["-r", "{pcap_file}", "-Y", "{filter}", "-a", "duration:{duration}"],
+                description="Read PCAP with filter and duration limit",
                 argument_definitions=[
                     ArgumentDefinition(
                         name="pcap_file",
@@ -86,6 +100,34 @@ class TsharkTool(BaseTool):
                         required=True,
                         description="BPF filter expression",
                         placeholder="tcp.port == 80"
+                    ),
+                    ArgumentDefinition(
+                        name="duration",
+                        type="number",
+                        required=True,
+                        description="Duration to analyze from start in seconds",
+                        placeholder="300"
+                    )
+                ]
+            ),
+            CommandTemplate(
+                base_command="tshark",
+                arguments=["-i", "{interface}", "-a", "duration:{duration}"],
+                description="Live capture with duration limit only",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="interface",
+                        type="string",
+                        required=True,
+                        description="Network interface to capture from",
+                        placeholder="eth0"
+                    ),
+                    ArgumentDefinition(
+                        name="duration",
+                        type="number",
+                        required=True,
+                        description="Duration of capture in seconds",
+                        placeholder="60"
                     )
                 ]
             ),
