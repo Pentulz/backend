@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List
 
-from app.services.tools.base import BaseTool, CommandTemplate
+from app.services.tools.base import BaseTool, CommandTemplate, ArgumentDefinition
 from app.services.tools.manager import ToolManager
 
 
@@ -40,31 +40,106 @@ class NmapTool(BaseTool):
                 base_command="nmap",
                 arguments=["-sL", "{target}"],
                 description="List scan - just list targets",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="target",
+                        type="string",
+                        required=True,
+                        description="Target host or network to scan",
+                        placeholder="192.168.1.0/24"
+                    )
+                ]
             ),
             CommandTemplate(
                 base_command="nmap",
                 arguments=["-sT", "-p", "{ports}", "{target}"],
                 description="TCP connect scan on specific ports",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="ports",
+                        type="string",
+                        required=True,
+                        description="Ports to scan (single port, range, or comma-separated)",
+                        placeholder="80,443,8080-8090"
+                    ),
+                    ArgumentDefinition(
+                        name="target",
+                        type="string",
+                        required=True,
+                        description="Target host to scan",
+                        placeholder="192.168.1.1"
+                    )
+                ]
             ),
             CommandTemplate(
                 base_command="nmap",
                 arguments=["-sS", "-p", "{ports}", "{target}"],
                 description="TCP SYN scan on specific ports",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="ports",
+                        type="string",
+                        required=True,
+                        description="Ports to scan (single port, range, or comma-separated)",
+                        placeholder="80,443,8080-8090"
+                    ),
+                    ArgumentDefinition(
+                        name="target",
+                        type="string",
+                        required=True,
+                        description="Target host to scan",
+                        placeholder="192.168.1.1"
+                    )
+                ]
             ),
             CommandTemplate(
                 base_command="nmap",
                 arguments=["-sV", "-p", "{ports}", "{target}"],
                 description="Service version detection",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="ports",
+                        type="string",
+                        required=True,
+                        description="Ports to scan for service detection",
+                        placeholder="80,443,22,21"
+                    ),
+                    ArgumentDefinition(
+                        name="target",
+                        type="string",
+                        required=True,
+                        description="Target host to scan",
+                        placeholder="192.168.1.1"
+                    )
+                ]
             ),
             CommandTemplate(
                 base_command="nmap",
                 arguments=["-O", "{target}"],
                 description="OS detection",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="target",
+                        type="string",
+                        required=True,
+                        description="Target host for OS detection",
+                        placeholder="192.168.1.1"
+                    )
+                ]
             ),
             CommandTemplate(
                 base_command="nmap",
                 arguments=["-A", "{target}"],
                 description="Aggressive scan",
+                argument_definitions=[
+                    ArgumentDefinition(
+                        name="target",
+                        type="string",
+                        required=True,
+                        description="Target host for aggressive scan",
+                        placeholder="192.168.1.1"
+                    )
+                ]
             ),
         ]
 

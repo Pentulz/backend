@@ -1,7 +1,19 @@
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal, Union
+
+
+@dataclass
+class ArgumentDefinition:
+    """Definition of a command argument"""
+    
+    name: str
+    type: Literal["string", "number", "boolean"]
+    required: bool
+    description: str = ""
+    default_value: Union[str, int, bool, None] = None
+    placeholder: str = ""
 
 
 @dataclass
@@ -11,6 +23,11 @@ class CommandTemplate:
     base_command: str
     arguments: List[str]
     description: str
+    argument_definitions: List[ArgumentDefinition] = None
+
+    def __post_init__(self):
+        if self.argument_definitions is None:
+            self.argument_definitions = []
 
 
 class BaseTool(ABC):
