@@ -116,3 +116,47 @@ class FFufTool(BaseTool):
     def parse_results(self, raw_output: str, command_used: str) -> Dict[str, Any]:
         """Parse ffuf output"""
         return raw_output
+
+    def validate_command(self, command_args: List[str]) -> bool:
+        """Validate ffuf command arguments"""
+        return self._validate_command_common(command_args, "ffuf")
+
+    def _validate_placeholder(self, value: str, placeholder_name: str) -> bool:
+        """Validate placeholder values for ffuf"""
+        if not value or not value.strip():
+            return False
+
+        # Define validation rules for each placeholder type
+        validation_rules = {
+            "wordlist": lambda v: bool(v.strip()),
+            "url": lambda v: bool(v.strip() and "FUZZ" in v),
+            "match_codes": self._validate_match_codes,
+            "filter_size": self._validate_filter_size,
+        }
+
+        # Get the validation function for this placeholder
+        validator_func = validation_rules.get(placeholder_name)
+        if validator_func:
+            return validator_func(value)
+
+        return True
+
+    def _validate_match_codes(self, value: str) -> bool:
+        """Validate HTTP status codes"""
+        codes = value.split(",")
+        for code in codes:
+            try:
+                code_num = int(code.strip())
+                if not 100 <= code_num <= 599:
+                    return False
+            except ValueError:
+                return False
+        return True
+
+    def _validate_filter_size(self, value: str) -> bool:
+        """Validate numeric size"""
+        try:
+            size = int(value)
+            return size > 0
+        except ValueError:
+            return False

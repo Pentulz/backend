@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Any, Dict, List
 
 from app.services.tools.base import ArgumentDefinition, BaseTool, CommandTemplate
@@ -146,6 +147,60 @@ class NmapTool(BaseTool):
     def parse_results(self, raw_output: str, command_used: str) -> Dict[str, Any]:
         """Parse nmap output"""
         return raw_output
+
+    def validate_command(self, command_args: List[str]) -> bool:
+        """Validate nmap command arguments"""
+        return self._validate_command_common(command_args, "nmap")
+
+    def _validate_placeholder(self, value: str, placeholder_name: str) -> bool:
+        """Validate placeholder values for nmap"""
+        if not value or not value.strip():
+            return False
+
+        # Define validation rules for each placeholder type
+        validation_rules = {
+            "ports": self._validate_ports,
+            "target": self._validate_target,
+        }
+
+        # Get the validation function for this placeholder
+        validator_func = validation_rules.get(placeholder_name)
+        if validator_func:
+            return validator_func(value)
+
+        return True
+
+    def _validate_ports(self, value: str) -> bool:
+        """Validate ports: single port, range, or comma-separated"""
+        port_patterns = value.split(",")
+        for pattern in port_patterns:
+            if "-" in pattern:
+                # Port range like "80-90"
+                try:
+                    start, end = pattern.split("-", 1)
+                    start_port = int(start)
+                    end_port = int(end)
+                    if not (
+                        1 <= start_port <= 65535
+                        and 1 <= end_port <= 65535
+                        and start_port <= end_port
+                    ):
+                        return False
+                except (ValueError, IndexError):
+                    return False
+            else:
+                # Single port
+                try:
+                    port = int(pattern)
+                    if not 1 <= port <= 65535:
+                        return False
+                except ValueError:
+                    return False
+        return True
+
+    def _validate_target(self, value: str) -> bool:
+        """Validate target (IP, hostname, network range)"""
+        return bool(re.match(r"^[\w\.\-/:]+$", value))
 
 
 if __name__ == "__main__":

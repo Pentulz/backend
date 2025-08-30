@@ -83,3 +83,7 @@ class ToolManager:
         if not tool:
             return None
         return tool.parse_results(raw_output, command_used)
+
+    def get_tool(self, tool_name: str) -> BaseTool:
+        """Get tool by name"""
+        return self.tools.get(tool_name)

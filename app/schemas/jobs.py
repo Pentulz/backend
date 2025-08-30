@@ -1,8 +1,39 @@
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
+
+
+# Action schema for job actions
+class JobAction(BaseModel):
+    """Schema for job action validation"""
+
+    cmd: str = Field(..., description="Tool command to execute")
+    args: List[str] = Field(..., description="Command arguments")
+    timeout: Union[int, float] = Field(300, ge=0, description="Timeout in seconds")
+
+    @validator("cmd")
+    def validate_cmd(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Command cannot be empty")
+        return v.strip()
+
+    @validator("args")
+    def validate_args(cls, v):
+        if not v:
+            raise ValueError("Args cannot be empty")
+
+        if not all(isinstance(arg, str) for arg in v):
+            raise ValueError("All args must be strings")
+        return v
+
+    @validator("timeout")
+    def validate_timeout(cls, v):
+        if v < 0:
+            raise ValueError("Timeout must be non-negative")
+        return v
+
 
 # Request models
 
@@ -12,7 +43,7 @@ class Job(BaseModel):
     name: str
     description: Optional[str] = None
     agent_id: uuid.UUID
-    action: dict
+    action: JobAction
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     created_at: datetime
@@ -20,20 +51,44 @@ class Job(BaseModel):
 
 
 class JobCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, description="Job name")
     description: Optional[str] = None
-    agent_id: uuid.UUID
-    action: dict
+    agent_id: uuid.UUID = Field(..., description="Agent ID to execute the job")
+    action: JobAction = Field(..., description="Action to perform")
+
+    @validator("name")
+    def validate_name(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Name cannot be empty")
+        return v.strip()
+
+    @validator("description")
+    def validate_description(cls, v):
+        if v is not None and not v.strip():
+            return None
+        return v.strip() if v else None
 
 
 class JobUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     agent_id: Optional[uuid.UUID] = None
-    action: Optional[dict] = None
+    action: Optional[JobAction] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     results: Optional[dict] = None
+
+    @validator("name")
+    def validate_name(cls, v):
+        if v is not None and not v.strip():
+            raise ValueError("Name cannot be empty")
+        return v.strip() if v else None
+
+    @validator("description")
+    def validate_description(cls, v):
+        if v is not None and not v.strip():
+            return None
+        return v.strip() if v else None
 
 
 # Response models

@@ -5,7 +5,8 @@ disable=
     C0116,  # missing function docstring
     C0304,   # missing final newline
     R0903,   # too few public methods
-    R0401    # cyclic import for the moment, because in nmap.py we have a import of manager.py to test the tool
+    R0401,   # cyclic import for the moment, because in nmap.py we have a import of manager.py to test the tool
+    E0213    # Method should have "self" as first argument (no-self-argument) - Pydantic validators use 'cls'
     
 [FORMAT]
 max-line-length=150
