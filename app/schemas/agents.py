@@ -37,7 +37,7 @@ class Agent(BaseModel):
 
 
 class AgentCreate(BaseModel):
-    hostname: str
+    name: str
     description: str
 
 

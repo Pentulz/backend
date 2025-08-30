@@ -37,19 +37,25 @@ class AgentsService:
         )
         return result.scalar_one_or_none()
 
-    async def create_agent(self, agent: AgentCreate) -> Agents:
-        if not agent.hostname:
-            raise CreateError("Hostname is required")
+    async def get_agent_by_name(self, name: str) -> Optional[Agents]:
+        query = select(Agents).where(Agents.name == name)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
 
-        if await self.get_agent_by_hostname(agent.hostname):
-            raise CreateError("Agent with this hostname already exists")
+    async def create_agent(self, agent: AgentCreate) -> Agents:
+        if not agent.name:
+            raise CreateError("Name is required")
+
+        if await self.get_agent_by_name(agent.name):
+            raise CreateError("Agent with this name already exists")
 
         # Generate token
         token = str(uuid.uuid4())
 
         # Create agent
         new_agent = Agents(
-            hostname=agent.hostname,
+            name=agent.name,
+            hostname=None,
             description=agent.description,
             platform=None,
             available_tools={},
