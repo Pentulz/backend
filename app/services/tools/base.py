@@ -43,6 +43,22 @@ class BaseTool(ABC):
     @abstractmethod
     def command_templates(self) -> List[CommandTemplate]:
         """Available command templates for this tool"""
+        
+    @property
+    @abstractmethod
+    def export_format(self) -> str:
+        """Export format used by the tool (xml, json, csv, etc.)"""
+        pass
+    
+    @property
+    @abstractmethod
+    def export_arguments(self) -> List[str]:
+        """Arguments needed to export in the desired format"""
+        pass
+    
+    def get_command_with_export(self, template_args: List[str]) -> List[str]:
+        """Add export arguments to any command"""
+        return template_args + self.export_arguments
 
     @abstractmethod
     def parse_results(self, raw_output: str, command_used: str) -> Dict[str, Any]:

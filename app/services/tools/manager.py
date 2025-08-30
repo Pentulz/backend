@@ -28,6 +28,8 @@ class ToolManager:
                     "attributes": {
                         "name": name,
                         "cmd": tool.get_base_command,
+                        "export_format": tool.export_format,
+                        "export_arguments": tool.export_arguments,
                         "version_arg": tool.get_version_arg,
                         "variants": [
                             {

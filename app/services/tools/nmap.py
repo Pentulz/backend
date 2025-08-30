@@ -23,6 +23,15 @@ class NmapTool(BaseTool):
     @property
     def get_version_arg(self) -> str:
         return "--version"
+    
+    @property
+    def export_format(self) -> str:
+        return "xml"
+    
+    @property
+    def export_arguments(self) -> List[str]:
+        """Always export XML to stdout for consistent parsing"""
+        return ["-oX", "-"]
 
     @property
     def command_templates(self) -> List[CommandTemplate]:
