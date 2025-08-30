@@ -37,6 +37,7 @@ class AgentsService:
         return result.scalar_one_or_none()
 
     async def create_agent(self, agent: AgentCreate) -> Agents:
+        if not agent.name:
             raise CreateError("Name is required")
 
         if await self.get_agent_by_name(agent.name):
