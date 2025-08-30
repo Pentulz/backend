@@ -27,6 +27,7 @@ class Agents(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid, primary_key=True, server_default=text("gen_random_uuid()")
     )
+    name: Mapped[str] = mapped_column(Text)
     hostname: Mapped[Optional[str]] = mapped_column(Text)
     description: Mapped[Optional[str]] = mapped_column(Text)
     platform: Mapped[PlatformType] = mapped_column(
