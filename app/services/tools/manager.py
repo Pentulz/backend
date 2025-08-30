@@ -16,16 +16,19 @@ class ToolManager:
         # Not definitive, just in order to test the tool above
         # pylint: disable=import-outside-toplevel
         from app.services.tools.nmap import NmapTool
+
         self.tools["nmap"] = NmapTool()
-        
+
         # pylint: disable=import-outside-toplevel
         from app.services.tools.tshark import TsharkTool
+
         self.tools["tshark"] = TsharkTool()
-        
+
         # pylint: disable=import-outside-toplevel
         from app.services.tools.ffuf import FFufTool
+
         self.tools["ffuf"] = FFufTool()
-        
+
     def get_available_tools(self) -> List[Dict[str, Any]]:
         result = []
         for name, tool in self.tools.items():
@@ -42,17 +45,21 @@ class ToolManager:
                             {
                                 "args": cmd.arguments,
                                 "description": cmd.description,
-                                "argument_definitions": [
-                                    {
-                                        "name": arg.name,
-                                        "type": arg.type,
-                                        "required": arg.required,
-                                        "description": arg.description,
-                                        "default_value": arg.default_value,
-                                        "placeholder": arg.placeholder,
-                                    }
-                                    for arg in cmd.argument_definitions
-                                ] if cmd.argument_definitions else [],
+                                "argument_definitions": (
+                                    [
+                                        {
+                                            "name": arg.name,
+                                            "type": arg.type,
+                                            "required": arg.required,
+                                            "description": arg.description,
+                                            "default_value": arg.default_value,
+                                            "placeholder": arg.placeholder,
+                                        }
+                                        for arg in cmd.argument_definitions
+                                    ]
+                                    if cmd.argument_definitions
+                                    else []
+                                ),
                             }
                             for cmd in tool.command_templates
                         ],

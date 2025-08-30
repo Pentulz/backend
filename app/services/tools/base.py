@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Literal, Union
 @dataclass
 class ArgumentDefinition:
     """Definition of a command argument"""
-    
+
     name: str
     type: Literal["string", "number", "boolean"]
     required: bool
@@ -37,42 +37,37 @@ class BaseTool(ABC):
     @abstractmethod
     def name(self) -> str:
         pass
-    
+
     @property
     @abstractmethod
     def description(self) -> str:
         """Description of the tool"""
-        pass
-    
+
     @property
     @abstractmethod
     def get_base_command(self) -> str:
         """Base command for the tool"""
-        pass
 
     @property
     @abstractmethod
     def get_version_arg(self) -> str:
         """Argument to check if tool is available"""
-        pass
 
     @property
     @abstractmethod
     def command_templates(self) -> List[CommandTemplate]:
         """Available command templates for this tool"""
-        
+
     @property
     @abstractmethod
     def export_format(self) -> str:
         """Export format used by the tool (xml, json, csv, etc.)"""
-        pass
-    
+
     @property
     @abstractmethod
     def export_arguments(self) -> List[str]:
         """Arguments needed to export in the desired format"""
-        pass
-    
+
     def get_command_with_export(self, template_args: List[str]) -> List[str]:
         """Add export arguments to any command"""
         return template_args + self.export_arguments

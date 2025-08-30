@@ -3,12 +3,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.exceptions import CreateError, DeleteError, UpdateError
-from app.schemas.agents import Agent, AgentCreate, AgentUpdate
-from app.schemas.jobs import Job
-from app.schemas.response import (
+from app.core.response import (
     create_error_response,
     create_success_response,
     create_success_response_list,
+)
+from app.schemas.agents import (
+    Agent,
+    AgentCreate,
+    AgentResponse,
+    AgentsListResponse,
+    AgentUpdate,
+)
+from app.schemas.jobs import Job, JobsListResponse
+from app.schemas.response_models import (
+    DetailedBadRequestError,
+    DetailedInternalServerError,
+    DetailedNotFoundError,
+    MessageResponse,
 )
 from app.services.agents import AgentsService
 from app.utils.uuid import cast_uuid
@@ -16,7 +28,17 @@ from app.utils.uuid import cast_uuid
 router = APIRouter()
 
 
-@router.get("/agents")
+@router.get(
+    "/agents",
+    response_model=AgentsListResponse,
+    responses={
+        200: {"description": "List of agents retrieved successfully"},
+        500: {
+            "model": DetailedInternalServerError,
+            "description": "Internal server error",
+        },
+    },
+)
 async def get_agents(db: AsyncSession = Depends(get_db)):
     """Get list of all agents with their jobs"""
     agents_service = AgentsService(db)
@@ -57,7 +79,22 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
     return create_success_response_list("agents", response)
 
 
-@router.patch("/agents/{agent_id}")
+@router.patch(
+    "/agents/{agent_id}",
+    response_model=AgentResponse,
+    responses={
+        200: {"description": "Agent updated successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid data",
+        },
+        404: {"model": DetailedNotFoundError, "description": "Agent not found"},
+        500: {
+            "model": DetailedInternalServerError,
+            "description": "Internal server error",
+        },
+    },
+)
 async def update_agent(
     agent_id: str, agent: AgentUpdate, db: AsyncSession = Depends(get_db)
 ):
@@ -92,7 +129,18 @@ async def update_agent(
         return create_error_response("500", "Internal Server Error", str(e), 500)
 
 
-@router.get("/agents/{agent_id}")
+@router.get(
+    "/agents/{agent_id}",
+    response_model=AgentResponse,
+    responses={
+        200: {"description": "Agent retrieved successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid agent ID",
+        },
+        404: {"model": DetailedNotFoundError, "description": "Agent not found"},
+    },
+)
 async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     """
     Get agent by id with jobs
@@ -136,7 +184,21 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.post("/agents")
+@router.post(
+    "/agents",
+    response_model=AgentResponse,
+    responses={
+        200: {"description": "Agent created successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid data",
+        },
+        500: {
+            "model": DetailedInternalServerError,
+            "description": "Internal server error",
+        },
+    },
+)
 async def create_agent(agent: AgentCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a new agent
@@ -163,7 +225,18 @@ async def create_agent(agent: AgentCreate, db: AsyncSession = Depends(get_db)):
         return create_error_response("400", "Bad Request", str(e), 400)
 
 
-@router.delete("/agents/{agent_id}")
+@router.delete(
+    "/agents/{agent_id}",
+    response_model=MessageResponse,
+    responses={
+        200: {"description": "Agent deleted successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid agent ID",
+        },
+        404: {"model": DetailedNotFoundError, "description": "Agent not found"},
+    },
+)
 async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     """
     Delete an agent
@@ -182,15 +255,25 @@ async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
         return create_error_response("404", "Not Found", "Agent not found", 404)
 
 
-@router.get("/agents/{agent_id}/jobs")
+@router.get(
+    "/agents/{agent_id}/jobs",
+    response_model=JobsListResponse,
+    responses={
+        200: {"description": "Agent jobs retrieved successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid agent ID",
+        },
+    },
+)
 async def get_agent_jobs(
     agent_id: str, completed: bool = False, db: AsyncSession = Depends(get_db)
 ):
     """
     Get jobs for an agent if query params ?completed=false, return only not completed jobs
     Example:
-    - GET http://localhost:8000/api/v1/agents/550e8400-e29b-41d4-a716-446655440001/jobs?completed=false
-    - GET http://localhost:8000/api/v1/agents/550e8400-e29b-41d4-a716-446655440001/jobs?completed=true
+    - GET http://localhost:8000/api/v1/agents/<agent_id>/jobs?completed=false
+    - GET http://localhost:8000/api/v1/agents/<agent_id>/jobs?completed=true
     """
     if not cast_uuid(agent_id):
         return create_error_response("400", "Bad Request", "Invalid agent id", 400)

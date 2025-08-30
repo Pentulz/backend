@@ -1,23 +1,26 @@
-from typing import Any, Dict, List
+from typing import Dict, Generic, List, TypeVar, Union
 
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+# Type générique pour les données
+T = TypeVar("T")
+
 # Documentation: https://jsonapi.org/examples/
 
 
-class JSONAPIResource(BaseModel):
+class JSONAPIResource(BaseModel, Generic[T]):
     """Individual resource in JSON:API format"""
 
     type: str
     id: str
-    attributes: Dict[str, Any]
+    attributes: T
 
 
-class JSONAPISuccessResponse(BaseModel):
+class JSONAPISuccessResponse(BaseModel, Generic[T]):
     """Success response following JSON:API spec"""
 
-    data: JSONAPIResource | List[JSONAPIResource]
+    data: Union[JSONAPIResource[T], List[JSONAPIResource[T]]]
 
 
 class JSONAPIErrorResponse(BaseModel):
