@@ -3,19 +3,35 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.exceptions import CreateError, DeleteError, UpdateError
-from app.schemas.jobs import Job, JobCreate, JobUpdate
-from app.schemas.response import (
+from app.core.response import (
     create_error_response,
     create_success_response,
     create_success_response_list,
 )
-from app.services.jobs_service import JobsService
+from app.schemas.jobs import Job, JobCreate, JobResponse, JobsListResponse, JobUpdate
+from app.schemas.response_models import (
+    DetailedBadRequestError,
+    DetailedInternalServerError,
+    DetailedNotFoundError,
+    MessageResponse,
+)
+from app.services.jobs import JobsService
 from app.utils.uuid import cast_uuid
 
 router = APIRouter()
 
 
-@router.get("/jobs")
+@router.get(
+    "/jobs",
+    response_model=JobsListResponse,
+    responses={
+        200: {"description": "List of jobs retrieved successfully"},
+        500: {
+            "model": DetailedInternalServerError,
+            "description": "Internal server error",
+        },
+    },
+)
 async def get_jobs(db: AsyncSession = Depends(get_db)):
     """
     Get list of all jobs
@@ -42,7 +58,21 @@ async def get_jobs(db: AsyncSession = Depends(get_db)):
     return create_success_response_list("jobs", response)
 
 
-@router.post("/jobs")
+@router.post(
+    "/jobs",
+    response_model=JobResponse,
+    responses={
+        200: {"description": "Job created successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid data",
+        },
+        500: {
+            "model": DetailedInternalServerError,
+            "description": "Internal server error",
+        },
+    },
+)
 async def create_job(job: JobCreate, db: AsyncSession = Depends(get_db)):
     """
     Create a new job
@@ -71,7 +101,18 @@ async def create_job(job: JobCreate, db: AsyncSession = Depends(get_db)):
         return create_error_response("400", "Bad Request", str(e), 400)
 
 
-@router.get("/jobs/{job_id}")
+@router.get(
+    "/jobs/{job_id}",
+    response_model=JobResponse,
+    responses={
+        200: {"description": "Job retrieved successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid job ID",
+        },
+        404: {"model": DetailedNotFoundError, "description": "Job not found"},
+    },
+)
 async def get_job(job_id: str, db: AsyncSession = Depends(get_db)):
     """
     Get job by id
@@ -103,7 +144,18 @@ async def get_job(job_id: str, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.delete("/jobs/{job_id}")
+@router.delete(
+    "/jobs/{job_id}",
+    response_model=MessageResponse,
+    responses={
+        200: {"description": "Job deleted successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid job ID",
+        },
+        404: {"model": DetailedNotFoundError, "description": "Job not found"},
+    },
+)
 async def delete_job(job_id: str, db: AsyncSession = Depends(get_db)):
     """
     Delete a job
@@ -119,7 +171,22 @@ async def delete_job(job_id: str, db: AsyncSession = Depends(get_db)):
         return create_error_response("404", "Not Found", "Job not found", 404)
 
 
-@router.patch("/jobs/{job_id}")
+@router.patch(
+    "/jobs/{job_id}",
+    response_model=JobResponse,
+    responses={
+        200: {"description": "Job updated successfully"},
+        400: {
+            "model": DetailedBadRequestError,
+            "description": "Bad request - invalid data",
+        },
+        404: {"model": DetailedNotFoundError, "description": "Job not found"},
+        500: {
+            "model": DetailedInternalServerError,
+            "description": "Internal server error",
+        },
+    },
+)
 async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get_db)):
     """
     Update a job

@@ -1,23 +1,26 @@
-from typing import Any, Dict, List
+from typing import Dict, Generic, List, TypeVar, Union
 
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+# Type générique pour les données
+T = TypeVar("T")
+
 # Documentation: https://jsonapi.org/examples/
 
 
-class JSONAPIResource(BaseModel):
+class JSONAPIResource(BaseModel, Generic[T]):
     """Individual resource in JSON:API format"""
 
     type: str
     id: str
-    attributes: Dict[str, Any]
+    attributes: T
 
 
-class JSONAPISuccessResponse(BaseModel):
+class JSONAPISuccessResponse(BaseModel, Generic[T]):
     """Success response following JSON:API spec"""
 
-    data: JSONAPIResource | List[JSONAPIResource]
+    data: Union[JSONAPIResource[T], List[JSONAPIResource[T]]]
 
 
 class JSONAPIErrorResponse(BaseModel):
@@ -65,22 +68,38 @@ def create_success_response_list(
 
     data = []
     for resource in resources:
-        resource_id = str(resource.get("id", ""))
+        # Check if resource is already in JSON:API format
+        if "type" in resource and "attributes" in resource:
+            # Resource is already formatted, just serialize it
+            serialized_resource = {
+                "type": resource["type"],
+                "attributes": {
+                    k: _serialize_value(v) for k, v in resource["attributes"].items()
+                },
+            }
 
-        # Serialize each resource's attributes
-        serialized_attributes = {
-            k: _serialize_value(v) for k, v in resource.items() if k != "id"
-        }
+            if "id" in resource:
+                serialized_resource["id"] = str(resource["id"])
 
-        res = {
-            "type": resource_type,
-            "attributes": serialized_attributes,
-        }
+            data.append(serialized_resource)
+        else:
+            # Resource is raw data, format it
+            resource_id = str(resource.get("id", ""))
 
-        if resource_id:
-            res.update(id=resource_id)
+            # Serialize each resource's attributes
+            serialized_attributes = {
+                k: _serialize_value(v) for k, v in resource.items() if k != "id"
+            }
 
-        data.append(res)
+            res = {
+                "type": resource_type,
+                "attributes": serialized_attributes,
+            }
+
+            if resource_id:
+                res.update(id=resource_id)
+
+            data.append(res)
 
     return JSONResponse(content={"data": data}, media_type="application/json")
 
