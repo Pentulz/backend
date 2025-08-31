@@ -1,0 +1,50 @@
+{
+  "results": [
+    {
+      "url": "http://example.com/",
+      "status": 200,
+      "length": 1234,
+      "words": 45,
+      "lines": 12
+    },
+    {
+      "url": "http://example.com/admin",
+      "status": 403,
+      "length": 0,
+      "words": 0,
+      "lines": 0
+    },
+    {
+      "url": "http://example.com/login",
+      "status": 200,
+      "length": 567,
+      "words": 23,
+      "lines": 8
+    },
+    {
+      "url": "http://example.com/backup",
+      "status": 200,
+      "length": 8901,
+      "words": 156,
+      "lines": 45
+    },
+    {
+      "url": "http://example.com/config",
+      "status": 200,
+      "length": 234,
+      "words": 12,
+      "lines": 3
+    },
+    {
+      "url": "http://example.com/phpinfo.php",
+      "status": 200,
+      "length": 45678,
+      "words": 890,
+      "lines": 234
+    }
+  ],
+  "config": {
+    "url": "http://example.com/FUZZ",
+    "wordlist": "/usr/share/wordlists/dirb/common.txt"
+  }
+}

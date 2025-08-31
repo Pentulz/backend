@@ -48,7 +48,11 @@ async def get_reports(db: AsyncSession = Depends(get_db)):
 
     response = [
         Report(
-            id=report.id, results=report.results, created_at=report.created_at
+            id=report.id,
+            name=report.name,
+            description=report.description,
+            results=report.results,
+            created_at=report.created_at,
         ).model_dump(mode="json")
         for report in reports
     ]
@@ -81,7 +85,15 @@ async def create_report(report: ReportCreate, db: AsyncSession = Depends(get_db)
         report = await reports_service.create_report(report)
 
         return create_success_response(
-            "reports", str(report.id), report.model_dump(mode="json")
+            "reports",
+            str(report.id),
+            Report(
+                id=report.id,
+                name=report.name,
+                description=report.description,
+                results=report.results,
+                created_at=report.created_at,
+            ).model_dump(mode="json"),
         )
     except CreateError as e:
         return create_error_response("400", "Bad Request", str(e), 400)
@@ -114,7 +126,11 @@ async def get_report(report_id: str, db: AsyncSession = Depends(get_db)):
         return create_error_response("404", "Not Found", "Report not found", 404)
 
     response = Report(
-        id=report.id, results=report.results, created_at=report.created_at
+        id=report.id,
+        name=report.name,
+        description=report.description,
+        results=report.results,
+        created_at=report.created_at,
     )
 
     return create_success_response(
@@ -153,7 +169,11 @@ async def update_report(
         report = await reports_service.update_report(report_id, report_update)
 
         response = Report(
-            id=report.id, results=report.results, created_at=report.created_at
+            id=report.id,
+            name=report.name,
+            description=report.description,
+            results=report.results,
+            created_at=report.created_at,
         )
 
         return create_success_response(

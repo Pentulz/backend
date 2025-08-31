@@ -53,11 +53,11 @@ class Job(BaseModel):
     name: str
     description: Optional[str] = None
     agent_id: uuid.UUID
-    action: JobActionResponse  # Changed from JobAction to JobActionResponse
+    action: JobActionResponse
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     created_at: datetime
-    results: Optional[dict] = None
+    results: Optional[str] = None
 
 
 class JobCreate(BaseModel):
@@ -86,7 +86,7 @@ class JobUpdate(BaseModel):
     action: Optional[JobAction] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    results: Optional[dict] = None
+    results: Optional[str] = None
 
     @validator("name")
     def validate_name(cls, v):
@@ -111,7 +111,7 @@ class JobAttributes(BaseModel):
     action: dict = Field(..., description="Action to perform")
     agent_id: str = Field(..., description="ID of the agent")
     description: Optional[str] = Field(None, description="Job description")
-    results: Optional[Dict[str, Any]] = Field(None, description="Job results")
+    results: Optional[str] = Field(None, description="Job results (raw tool output)")
     started_at: Optional[str] = Field(
         None, description="When the job started (ISO format)"
     )

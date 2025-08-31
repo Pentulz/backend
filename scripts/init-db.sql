@@ -23,7 +23,7 @@ CREATE TABLE jobs (
     name TEXT NOT NULL,
     description TEXT,
     action JSONB NOT NULL,
-    results JSONB,
+    results TEXT,
     started_at TIMESTAMP WITH TIME ZONE,
     completed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -32,6 +32,8 @@ CREATE TABLE jobs (
 -- Reports table
 CREATE TABLE reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    description TEXT,
     results JSONB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

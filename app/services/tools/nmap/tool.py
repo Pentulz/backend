@@ -162,7 +162,7 @@ class NmapTool(BaseTool):
         from app.services.tools.nmap.parser import NmapParser
 
         parser = NmapParser()
-        return parser.parse_results(raw_output, command_used)
+        return parser.parse_single_result(raw_output, command_used)
 
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate nmap command arguments"""

@@ -35,7 +35,7 @@ class Jobs(Base):
     action: Mapped[dict] = mapped_column(JSONB)
     agent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
     description: Mapped[Optional[str]] = mapped_column(Text)
-    results: Mapped[Optional[dict]] = mapped_column(JSONB)
+    results: Mapped[Optional[str]] = mapped_column(Text)
     # started_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
     # completed_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(
