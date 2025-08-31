@@ -35,6 +35,8 @@ class FFufTool(BaseTool):
     def command_templates(self) -> List[CommandTemplate]:
         return [
             CommandTemplate(
+                id="directory_fuzzing",
+                name="Directory Fuzzing",
                 base_command="ffuf",
                 arguments=["-w", "{wordlist}", "-u", "{url}"],
                 description="Directory/file fuzzing",
@@ -56,6 +58,8 @@ class FFufTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="status_code_matching",
+                name="Status Code Matching",
                 base_command="ffuf",
                 arguments=["-w", "{wordlist}", "-u", "{url}", "-mc", "{match_codes}"],
                 description="Fuzzing with status code matching",
@@ -84,6 +88,8 @@ class FFufTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="size_filtering",
+                name="Size Filtering",
                 base_command="ffuf",
                 arguments=["-w", "{wordlist}", "-u", "{url}", "-fs", "{filter_size}"],
                 description="Fuzzing with response size filtering",

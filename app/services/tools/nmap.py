@@ -38,6 +38,8 @@ class NmapTool(BaseTool):
     def command_templates(self) -> List[CommandTemplate]:
         return [
             CommandTemplate(
+                id="list_scan",
+                name="List Scan",
                 base_command="nmap",
                 arguments=["-sL", "{target}"],
                 description="List scan - just list targets",
@@ -52,6 +54,8 @@ class NmapTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="tcp_connect_scan",
+                name="TCP Connect Scan",
                 base_command="nmap",
                 arguments=["-sT", "-p", "{ports}", "{target}"],
                 description="TCP connect scan on specific ports",
@@ -73,6 +77,8 @@ class NmapTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="tcp_syn_scan",
+                name="TCP SYN Scan",
                 base_command="nmap",
                 arguments=["-sS", "-p", "{ports}", "{target}"],
                 description="TCP SYN scan on specific ports",
@@ -94,6 +100,8 @@ class NmapTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="service_version_detection",
+                name="Service Version Detection",
                 base_command="nmap",
                 arguments=["-sV", "-p", "{ports}", "{target}"],
                 description="Service version detection",
@@ -115,6 +123,8 @@ class NmapTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="os_detection",
+                name="OS Detection",
                 base_command="nmap",
                 arguments=["-O", "{target}"],
                 description="OS detection",
@@ -129,6 +139,8 @@ class NmapTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="aggressive_scan",
+                name="Aggressive Scan",
                 base_command="nmap",
                 arguments=["-A", "{target}"],
                 description="Aggressive scan",

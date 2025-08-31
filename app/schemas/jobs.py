@@ -1,42 +1,37 @@
 import uuid
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import Optional, Dict, Any
 
 from pydantic import BaseModel, Field, validator
 
 
-# Action schema for job actions
 class JobAction(BaseModel):
-    """Schema for job action validation"""
+    """Schema for job action using tool templates"""
 
-    cmd: str = Field(..., description="Tool command to execute")
-    args: List[str] = Field(..., description="Command arguments")
-    timeout: Union[int, float] = Field(300, ge=0, description="Timeout in seconds")
+    name: str = Field(..., description="Tool name (e.g., 'nmap', 'ffuf')")
+    variant: str = Field(..., description="Template ID (e.g., 'tcp_connect_scan', 'directory_fuzzing')")
+    args: Dict[str, Any] = Field(..., description="Custom arguments for the template")
 
-    @validator("cmd")
-    def validate_cmd(cls, v):
+    @validator("name")
+    def validate_name(cls, v):
         if not v or not v.strip():
-            raise ValueError("Command cannot be empty")
+            raise ValueError("Tool name cannot be empty")
+        return v.strip()
+
+    @validator("variant")
+    def validate_variant(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Template variant cannot be empty")
         return v.strip()
 
     @validator("args")
     def validate_args(cls, v):
-        if not v:
-            raise ValueError("Args cannot be empty")
-
-        if not all(isinstance(arg, str) for arg in v):
-            raise ValueError("All args must be strings")
-        return v
-
-    @validator("timeout")
-    def validate_timeout(cls, v):
-        if v < 0:
-            raise ValueError("Timeout must be non-negative")
+        if not isinstance(v, dict):
+            raise ValueError("Args must be a dictionary")
         return v
 
 
 # Request models
-
 
 class Job(BaseModel):
     id: uuid.UUID
@@ -93,19 +88,18 @@ class JobUpdate(BaseModel):
 
 # Response models
 
-
 class JobAttributes(BaseModel):
     """Job attributes for response model"""
 
     name: str = Field(..., description="Name of the job")
     action: dict = Field(..., description="Action to perform")
     agent_id: str = Field(..., description="ID of the agent")
-    description: str | None = Field(None, description="Job description")
-    results: dict | None = Field(None, description="Job results")
-    started_at: str | None = Field(
+    description: Optional[str] = Field(None, description="Job description")
+    results: Optional[Dict[str, Any]] = Field(None, description="Job results")
+    started_at: Optional[str] = Field(
         None, description="When the job started (ISO format)"
     )
-    completed_at: str | None = Field(
+    completed_at: Optional[str] = Field(
         None, description="When the job completed (ISO format)"
     )
     created_at: str = Field(..., description="When the job was created (ISO format)")
@@ -120,6 +114,6 @@ class JobResponse(BaseModel):
 class JobsListResponse(BaseModel):
     """Response model for jobs list endpoint"""
 
-    data: List[JobAttributes] = Field(
+    data: list[JobAttributes] = Field(
         ..., description="List of jobs in JSON:API format"
     )

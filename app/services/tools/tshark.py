@@ -35,6 +35,8 @@ class TsharkTool(BaseTool):
     def command_templates(self) -> List[CommandTemplate]:
         return [
             CommandTemplate(
+                id="live_capture_with_count",
+                name="Live Capture with Count",
                 base_command="tshark",
                 arguments=[
                     "-i",
@@ -70,6 +72,8 @@ class TsharkTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="pcap_duration_filter",
+                name="PCAP Duration Filter",
                 base_command="tshark",
                 arguments=["-r", "{pcap_file}", "-a", "duration:{duration}"],
                 description="Read PCAP file with duration filter",
@@ -91,6 +95,8 @@ class TsharkTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="pcap_filter_duration",
+                name="PCAP Filter with Duration",
                 base_command="tshark",
                 arguments=[
                     "-r",
@@ -126,6 +132,8 @@ class TsharkTool(BaseTool):
                 ],
             ),
             CommandTemplate(
+                id="live_capture_duration_only",
+                name="Live Capture Duration Only",
                 base_command="tshark",
                 arguments=["-i", "{interface}", "-a", "duration:{duration}"],
                 description="Live capture with duration limit only",

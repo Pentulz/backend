@@ -28,20 +28,6 @@ class JobsService:
     async def _validate_job_creation(self, job: JobCreate) -> None:
         """Validate job creation data beyond Pydantic validation"""
 
-        # Validate tool availability and command
-        tool_manager = ToolManager()
-        tool = tool_manager.get_tool(job.action.cmd)
-        if not tool:
-            raise CreateError(f"Tool '{job.action.cmd}' is not available")
-
-        # Validate command and get complete command with export arguments
-        is_valid, complete_command = tool.validate_and_prepare_command(job.action.args)
-        if not is_valid:
-            raise CreateError(f"Invalid command arguments for tool '{job.action.cmd}'")
-
-        # Store the complete command with export arguments
-        job.action.args = complete_command
-
         # Validate agent
         if not job.agent_id:
             raise CreateError("Agent ID is required")
@@ -57,11 +43,34 @@ class JobsService:
         if not agent.available_tools:
             raise CreateError("Agent does not have any available tools")
 
-        # Check if the required tool is available on the agent
-        # To test, we remove this check
+        # Validate action using template system
+        tool_manager = ToolManager()
+        
+        # Check if tool exists
+        tool = tool_manager.get_tool(job.action.name)
+        if not tool:
+            raise CreateError(f"Tool '{job.action.name}' is not available")
 
-        # if job.action.cmd not in agent.available_tools:
-        #     raise CreateError(f"Agent does not have the required tool '{job.action.cmd}'")
+        # Check if template exists
+        template = tool_manager.get_tool_variant(job.action.name, job.action.variant)
+        if not template:
+            raise CreateError(f"Template '{job.action.variant}' not found for tool '{job.action.name}'")
+
+        # Validate that all required arguments are provided
+        for arg_def in template["argument_definitions"]:
+            if arg_def["required"] and arg_def["name"] not in job.action.args:
+                if arg_def["default_value"] is None:
+                    raise CreateError(f"Required argument '{arg_def['name']}' missing for action '{job.action.name}'")
+
+        # Build command to validate it
+        command_args = tool_manager.build_command_from_variant(
+            job.action.name, job.action.variant, job.action.args
+        )
+        if not command_args:
+            raise CreateError(f"Failed to build command for action '{job.action.name}' with template '{job.action.variant}'")
+
+        # Store the complete command with export arguments
+        job.action.args = command_args
 
     async def create_job(self, job: JobCreate) -> Jobs:
         """Create a new job with comprehensive validation"""
@@ -90,7 +99,6 @@ class JobsService:
     async def update_job(self, job_id: str, job_update: JobUpdate) -> Jobs:
         job = await self.get_job_by_id(job_id)
         if not job:
-
             raise UpdateError("Job not found")
 
         # If job is completed or started, it cannot be updated

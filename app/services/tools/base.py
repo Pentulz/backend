@@ -19,6 +19,8 @@ class ArgumentDefinition:
 class CommandTemplate:
     """Template for building tool commands"""
 
+    id: str  # Unique identifier like "scan_port", "directory_fuzzing"
+    name: str  # Human readable name like "Scan Port", "Directory Fuzzing"
     base_command: str
     arguments: List[str]
     description: str
