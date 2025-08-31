@@ -75,12 +75,12 @@ def create_success_response_list(
                 "type": resource["type"],
                 "attributes": {
                     k: _serialize_value(v) for k, v in resource["attributes"].items()
-                }
+                },
             }
-            
+
             if "id" in resource:
                 serialized_resource["id"] = str(resource["id"])
-                
+
             data.append(serialized_resource)
         else:
             # Resource is raw data, format it

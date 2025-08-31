@@ -32,49 +32,53 @@ class ToolManager:
     def get_available_tools(self) -> List[Dict[str, Any]]:
         result = []
         for name, tool in self.tools.items():
-            result.append({
-                "type": "tools",
-                "id": name, 
-                "attributes": {
-                    "name": name,
-                    "cmd": tool.get_base_command,
-                    "export_format": tool.export_format,
-                    "export_arguments": tool.export_arguments,
-                    "version_arg": tool.get_version_arg,
-                    "variants": [
-                        {
-                            "id": cmd.id,
-                            "name": cmd.name,
-                            "description": cmd.description,
-                            "arguments": cmd.arguments,
-                            "argument_definitions": (
-                                [
-                                    {
-                                        "name": arg.name,
-                                        "type": arg.type,
-                                        "required": arg.required,
-                                        "description": arg.description,
-                                        "default_value": arg.default_value,
-                                        "placeholder": arg.placeholder,
-                                    }
-                                    for arg in cmd.argument_definitions
-                                ]
-                                if cmd.argument_definitions
-                                else []
-                            ),
-                        }
-                        for cmd in tool.command_templates
-                    ],
-                },
-            })
+            result.append(
+                {
+                    "type": "tools",
+                    "id": name,
+                    "attributes": {
+                        "name": name,
+                        "cmd": tool.get_base_command,
+                        "export_format": tool.export_format,
+                        "export_arguments": tool.export_arguments,
+                        "version_arg": tool.get_version_arg,
+                        "variants": [
+                            {
+                                "id": cmd.id,
+                                "name": cmd.name,
+                                "description": cmd.description,
+                                "arguments": cmd.arguments,
+                                "argument_definitions": (
+                                    [
+                                        {
+                                            "name": arg.name,
+                                            "type": arg.type,
+                                            "required": arg.required,
+                                            "description": arg.description,
+                                            "default_value": arg.default_value,
+                                            "placeholder": arg.placeholder,
+                                        }
+                                        for arg in cmd.argument_definitions
+                                    ]
+                                    if cmd.argument_definitions
+                                    else []
+                                ),
+                            }
+                            for cmd in tool.command_templates
+                        ],
+                    },
+                }
+            )
         return result
 
-    def get_tool_variant(self, tool_name: str, variant_id: str) -> Optional[Dict[str, Any]]:
+    def get_tool_variant(
+        self, tool_name: str, variant_id: str
+    ) -> Optional[Dict[str, Any]]:
         """Get a specific variant by ID for a tool"""
         tool = self.tools.get(tool_name)
         if not tool:
             return None
-            
+
         for template in tool.command_templates:
             if template.id == variant_id:
                 return {
@@ -82,17 +86,21 @@ class ToolManager:
                     "name": template.name,
                     "description": template.description,
                     "arguments": template.arguments,
-                    "argument_definitions": [
-                        {
-                            "name": arg.name,
-                            "type": arg.type,
-                            "required": arg.required,
-                            "description": arg.description,
-                            "default_value": arg.default_value,
-                            "placeholder": arg.placeholder,
-                        }
-                        for arg in template.argument_definitions
-                    ] if template.argument_definitions else [],
+                    "argument_definitions": (
+                        [
+                            {
+                                "name": arg.name,
+                                "type": arg.type,
+                                "required": arg.required,
+                                "description": arg.description,
+                                "default_value": arg.default_value,
+                                "placeholder": arg.placeholder,
+                            }
+                            for arg in template.argument_definitions
+                        ]
+                        if template.argument_definitions
+                        else []
+                    ),
                 }
         return None
 
@@ -103,21 +111,21 @@ class ToolManager:
         variant = self.get_tool_variant(tool_name, variant_id)
         if not variant:
             return None
-            
+
         tool = self.tools.get(tool_name)
         if not tool:
             return None
-            
+
         # Find the actual template object
         cmd_template = None
         for t in tool.command_templates:
             if t.id == variant_id:
                 cmd_template = t
                 break
-                
+
         if not cmd_template:
             return None
-            
+
         # Build command by replacing placeholders
         command_args = []
         for arg in cmd_template.arguments:
@@ -129,8 +137,12 @@ class ToolManager:
                 else:
                     # Check if there's a default value
                     arg_def = next(
-                        (a for a in cmd_template.argument_definitions if a.name == placeholder_name),
-                        None
+                        (
+                            a
+                            for a in cmd_template.argument_definitions
+                            if a.name == placeholder_name
+                        ),
+                        None,
                     )
                     if arg_def and arg_def.default_value is not None:
                         command_args.append(str(arg_def.default_value))
@@ -140,21 +152,33 @@ class ToolManager:
                 # This is a placeholder with prefix/suffix like "duration:{duration}"
                 placeholder_name = arg[arg.find("{") + 1 : arg.find("}")]
                 if placeholder_name in custom_args:
-                    command_args.append(arg.replace(f"{{{placeholder_name}}}", custom_args[placeholder_name]))
+                    command_args.append(
+                        arg.replace(
+                            f"{{{placeholder_name}}}", custom_args[placeholder_name]
+                        )
+                    )
                 else:
                     # Check if there's a default value
                     arg_def = next(
-                        (a for a in cmd_template.argument_definitions if a.name == placeholder_name),
-                        None
+                        (
+                            a
+                            for a in cmd_template.argument_definitions
+                            if a.name == placeholder_name
+                        ),
+                        None,
                     )
                     if arg_def and arg_def.default_value is not None:
-                        command_args.append(arg.replace(f"{{{placeholder_name}}}", str(arg_def.default_value)))
+                        command_args.append(
+                            arg.replace(
+                                f"{{{placeholder_name}}}", str(arg_def.default_value)
+                            )
+                        )
                     else:
                         return None  # Missing required argument
             else:
                 # Fixed argument
                 command_args.append(arg)
-                
+
         return command_args
 
     def validate_command(self, tool_name: str, command_args: List[str]) -> bool:

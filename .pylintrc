@@ -6,7 +6,11 @@ disable=
     C0304,   # missing final newline
     R0903,   # too few public methods
     R0401,   # cyclic import for the moment, because in nmap.py we have a import of manager.py to test the tool
-    E0213    # Method should have "self" as first argument (no-self-argument) - Pydantic validators use 'cls'
+    E0213,   # Method should have "self" as first argument (no-self-argument) - Pydantic validators use 'cls'
+    E1101    # no-member - Pydantic models cause false positives with pylint
     
 [FORMAT]
 max-line-length=150
+
+[DESIGN]
+max-branches=20

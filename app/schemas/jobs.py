@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional, Union
 
 from pydantic import BaseModel, Field, validator
 
@@ -9,7 +9,9 @@ class JobAction(BaseModel):
     """Schema for job action using tool templates"""
 
     name: str = Field(..., description="Tool name (e.g., 'nmap', 'ffuf')")
-    variant: str = Field(..., description="Template ID (e.g., 'tcp_connect_scan', 'directory_fuzzing')")
+    variant: str = Field(
+        ..., description="Template ID (e.g., 'tcp_connect_scan', 'directory_fuzzing')"
+    )
     args: Dict[str, Any] = Field(..., description="Custom arguments for the template")
 
     @validator("name")
@@ -31,14 +33,27 @@ class JobAction(BaseModel):
         return v
 
 
+class JobActionResponse(BaseModel):
+    """Schema for job action response - can handle both original args and built command"""
+
+    name: str = Field(..., description="Tool name (e.g., 'nmap', 'ffuf')")
+    variant: str = Field(
+        ..., description="Template ID (e.g., 'tcp_connect_scan', 'directory_fuzzing')"
+    )
+    args: Union[Dict[str, Any], list] = Field(
+        ..., description="Custom arguments or built command"
+    )
+
+
 # Request models
+
 
 class Job(BaseModel):
     id: uuid.UUID
     name: str
     description: Optional[str] = None
     agent_id: uuid.UUID
-    action: JobAction
+    action: JobActionResponse  # Changed from JobAction to JobActionResponse
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     created_at: datetime
@@ -87,6 +102,7 @@ class JobUpdate(BaseModel):
 
 
 # Response models
+
 
 class JobAttributes(BaseModel):
     """Job attributes for response model"""
