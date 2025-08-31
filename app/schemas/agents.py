@@ -22,6 +22,7 @@ class Tool(BaseModel):
 
 class Agent(BaseModel):
     id: uuid.UUID
+    name: str
     hostname: str | None
     description: str
     platform: PlatformType | None
@@ -38,6 +39,7 @@ class AgentCreate(BaseModel):
 
 
 class AgentUpdate(BaseModel):
+    name: str
     hostname: str
     description: str
     platform: PlatformType
