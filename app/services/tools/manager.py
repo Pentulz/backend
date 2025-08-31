@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from app.services.tools.base import BaseTool
+from app.services.tools.base_tool import BaseTool
 
 
 class ToolManager:
@@ -15,17 +15,17 @@ class ToolManager:
 
         # Not definitive, just in order to test the tool above
         # pylint: disable=import-outside-toplevel
-        from app.services.tools.nmap import NmapTool
+        from app.services.tools.nmap.tool import NmapTool
 
         self.tools["nmap"] = NmapTool()
 
         # pylint: disable=import-outside-toplevel
-        from app.services.tools.tshark import TsharkTool
+        from app.services.tools.tshark.tool import TsharkTool
 
         self.tools["tshark"] = TsharkTool()
 
         # pylint: disable=import-outside-toplevel
-        from app.services.tools.ffuf import FFufTool
+        from app.services.tools.ffuf.tool import FFufTool
 
         self.tools["ffuf"] = FFufTool()
 

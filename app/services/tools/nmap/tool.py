@@ -2,7 +2,7 @@ import json
 import re
 from typing import Any, Dict, List
 
-from app.services.tools.base import ArgumentDefinition, BaseTool, CommandTemplate
+from app.services.tools.base_tool import ArgumentDefinition, BaseTool, CommandTemplate
 from app.services.tools.manager import ToolManager
 
 

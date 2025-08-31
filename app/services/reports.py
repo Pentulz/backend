@@ -8,6 +8,7 @@ from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.jobs import Jobs
 from app.models.reports import Reports
 from app.schemas.reports import ReportCreate, ReportUpdate
+from app.services.tools.manager import ToolManager
 
 
 class ReportsService:
@@ -33,7 +34,11 @@ class ReportsService:
         jobs = jobs.scalars().all()
 
         # Get results
-        results = [job.results for job in jobs]
+        for job in jobs:
+            tool_name = job.action.get("tool")
+            tool_manager = ToolManager()
+            tool = tool_manager.get_tool(tool_name)
+            results = tool.parse_results(job.results, job.action.get("command"))
 
         # Process results
         processed_results = results

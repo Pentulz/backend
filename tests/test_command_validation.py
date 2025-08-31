@@ -1,8 +1,8 @@
 import pytest
 
-from app.services.tools.ffuf import FFufTool
-from app.services.tools.nmap import NmapTool
-from app.services.tools.tshark import TsharkTool
+from app.services.tools.ffuf.tool import FFufTool
+from app.services.tools.nmap.tool import NmapTool
+from app.services.tools.tshark.tool import TsharkTool
 
 
 class TestNmapValidation:
