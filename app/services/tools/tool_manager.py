@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from app.services.tools.base_tool import BaseTool
+from app.services.tools.tool import BaseTool
 
 
 class ToolManager:

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.core.response import create_success_response_list
 from app.schemas.response_models import DetailedInternalServerError, ToolsResponse
-from app.services.tools.manager import ToolManager
+from app.services.tools.tool_manager import ToolManager
 
 router = APIRouter()
 

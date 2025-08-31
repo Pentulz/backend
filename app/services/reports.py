@@ -8,7 +8,7 @@ from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.jobs import Jobs
 from app.models.reports import Reports
 from app.schemas.reports import ReportCreate, ReportUpdate
-from app.services.tools.manager import ToolManager
+from app.services.tools.tool_manager import ToolManager
 
 
 class ReportsService:

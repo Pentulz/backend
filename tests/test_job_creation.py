@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.schemas.jobs import JobAction, JobCreate
-from app.services.tools.manager import ToolManager
+from app.services.tools.tool_manager import ToolManager
 
 
 class TestJobCreation:

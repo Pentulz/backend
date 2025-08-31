@@ -1,7 +1,7 @@
 import re
 from typing import Any, Dict, List
 
-from app.services.tools.base_tool import ArgumentDefinition, BaseTool, CommandTemplate
+from app.services.tools.tool import ArgumentDefinition, BaseTool, CommandTemplate
 
 
 class TsharkTool(BaseTool):
@@ -158,7 +158,9 @@ class TsharkTool(BaseTool):
 
     def parse_results(self, raw_output: str, command_used: str) -> Dict[str, Any]:
         """Parse tshark output"""
-        return raw_output
+        from app.services.tools.tshark.parser import TsharkParser
+        parser = TsharkParser()
+        return parser.parse_results(raw_output, command_used)
 
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate tshark command arguments"""

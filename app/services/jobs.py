@@ -8,7 +8,7 @@ from app.core.exceptions import CreateError, DeleteError, UpdateError
 from app.models.jobs import Jobs
 from app.schemas.jobs import JobCreate, JobUpdate
 from app.services.agents import AgentsService
-from app.services.tools.manager import ToolManager
+from app.services.tools.tool_manager import ToolManager
 
 
 class JobsService:
