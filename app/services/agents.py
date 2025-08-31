@@ -58,7 +58,7 @@ class AgentsService:
             hostname=None,
             description=agent.description,
             platform=None,
-            available_tools={},
+            available_tools=[],
             token=token,
         )
 

@@ -52,6 +52,7 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
         response.append(
             Agent(
                 id=agent.id,
+                name=agent.name,
                 hostname=agent.hostname,
                 description=agent.description,
                 platform=agent.platform,
@@ -111,6 +112,7 @@ async def update_agent(
 
         updated_agent = Agent(
             id=agent_from_db.id,
+            name=agent_from_db.name,
             hostname=agent_from_db.hostname,
             description=agent_from_db.description,
             platform=agent_from_db.platform,
@@ -156,6 +158,7 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
 
     response = Agent(
         id=agent.id,
+        name=agent.name,
         hostname=agent.hostname,
         description=agent.description,
         platform=agent.platform,
@@ -209,6 +212,7 @@ async def create_agent(agent: AgentCreate, db: AsyncSession = Depends(get_db)):
 
         response = Agent(
             id=new_agent.id,
+            name=new_agent.name,
             hostname=new_agent.hostname,
             description=new_agent.description,
             platform=new_agent.platform,
