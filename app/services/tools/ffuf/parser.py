@@ -8,7 +8,7 @@ from app.services.tools.tool_parser import BaseParser
 class FFufParser(BaseParser):
     """Parser for FFuf JSON output"""
 
-    def parse_single_result(self, raw_output: str, command_used: str) -> Dict:
+    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
         """
         Parse FFuf JSON output to standard format
         Returns: {
@@ -19,19 +19,19 @@ class FFufParser(BaseParser):
         try:
             # Try to parse as JSON first
             data = json.loads(raw_output)
-            return self._parse_json_output(data, command_used)
+            return self._parse_json_output(data, command_used, agent_id)
         except json.JSONDecodeError:
             # Fall back to text parsing if JSON fails
-            return self._parse_text_output(raw_output, command_used)
+            return self._parse_text_output(raw_output, command_used, agent_id)
 
-    def _parse_json_output(self, data: Dict, command_used: str) -> Dict:
+    def _parse_json_output(self, data: Dict, command_used: str, agent_id: str = None) -> Dict:
         """Parse FFuf JSON output"""
         findings = []
 
         # Parse results
         results = data.get("results", [])
         for result in results:
-            finding = self._parse_result(result, command_used)
+            finding = self._parse_result(result, command_used, agent_id)
             if finding:
                 findings.append(finding)
 
@@ -40,7 +40,7 @@ class FFufParser(BaseParser):
 
         return {"findings": findings, "statistics": stats}
 
-    def _parse_result(self, result: Dict, command_used: str) -> Optional[Dict]:
+    def _parse_result(self, result: Dict, command_used: str, agent_id: str = None) -> Optional[Dict]:
         """Parse individual FFuf result"""
         url = result.get("url", "")
         status = result.get("status", 0)
@@ -74,6 +74,7 @@ class FFufParser(BaseParser):
             description=description,
             target=url,
             severity=severity,
+            agent_id=agent_id,
             timestamp=datetime.now().isoformat(),
         )
 
@@ -129,7 +130,7 @@ class FFufParser(BaseParser):
             "wordlist_size": config.get("wordlist", "unknown"),
         }
 
-    def _parse_text_output(self, raw_output: str, command_used: str) -> Dict:
+    def _parse_text_output(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
         """Fallback parser for text-based ffuf output"""
         findings = []
         lines = raw_output.split("\n")
@@ -142,7 +143,7 @@ class FFufParser(BaseParser):
             # Look for ffuf result lines
             # Example: "200     1234   /admin"
             if line and line[0].isdigit():
-                finding = self._parse_text_result_line(line)
+                finding = self._parse_text_result_line(line, agent_id)
                 if finding:
                     findings.append(finding)
 
@@ -157,7 +158,7 @@ class FFufParser(BaseParser):
             },
         }
 
-    def _parse_text_result_line(self, line: str) -> Optional[Dict]:
+    def _parse_text_result_line(self, line: str, agent_id: str = None) -> Optional[Dict]:
         """Parse a result line from text output"""
         try:
             # Example: "200     1234   /admin"
@@ -180,6 +181,7 @@ class FFufParser(BaseParser):
                     description=description,
                     target=url,
                     severity=severity,
+                    agent_id=agent_id,
                     timestamp=datetime.now().isoformat(),
                 )
         except:

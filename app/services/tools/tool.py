@@ -74,7 +74,7 @@ class BaseTool(ABC):
         return template_args + self.export_arguments
 
     @abstractmethod
-    def parse_results(self, raw_output: str, command_used: str) -> Dict[str, Any]:
+    def parse_results(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict[str, Any]:
         """Parse tool output into structured data"""
 
     @abstractmethod

@@ -92,7 +92,7 @@ class TestParsers:
 
         parser = NmapParser()
         result = parser.parse_single_result(
-            sample_data["nmap"], "nmap -sS -p 22,80,443,8080 192.168.1.1"
+            sample_data["nmap"], "nmap -sS -p 22,80,443,8080 192.168.1.1", "test_agent_001"
         )
 
         # Verify structure
@@ -130,7 +130,7 @@ class TestParsers:
 
         parser = FFufParser()
         result = parser.parse_single_result(
-            sample_data["ffuf"], "ffuf -w wordlist.txt -u http://example.com/FUZZ"
+            sample_data["ffuf"], "ffuf -w wordlist.txt -u http://example.com/FUZZ", "test_agent_002"
         )
 
         # Verify structure
@@ -168,7 +168,7 @@ class TestParsers:
 
         parser = TsharkParser()
         result = parser.parse_single_result(
-            sample_data["tshark"], "tshark -i eth0 -c 10 -T json"
+            sample_data["tshark"], "tshark -i eth0 -c 10 -T json", "test_agent_003"
         )
 
         # Verify structure
@@ -225,7 +225,7 @@ class TestToolManager:
         """Test that ToolManager can parse results for each tool"""
         for tool_name, data in sample_data.items():
             result = tool_manager.parse_results(
-                tool_name, data, f"{tool_name} test command"
+                tool_name, data, f"{tool_name} test command", f"test_agent_{tool_name}"
             )
 
             # Verify basic structure
@@ -248,7 +248,7 @@ class TestReportGeneration:
         all_statistics = {}
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command")
+            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
 
             if result and "findings" in result and "statistics" in result:
                 all_findings.extend(result["findings"])
@@ -310,7 +310,7 @@ class TestReportGeneration:
         severity_levels = set()
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command")
+            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
 
             if result and "findings" in result:
                 for finding in result["findings"]:
@@ -323,13 +323,28 @@ class TestReportGeneration:
         # Should have multiple severity levels
         assert len(severity_levels) > 1
 
+    def test_agent_id_in_findings(self, tool_manager, sample_data):
+        """Test that agent_id is correctly included in findings"""
+        if not sample_data:
+            pytest.skip("No sample data available")
+
+        for tool, data in sample_data.items():
+            test_agent_id = f"test_agent_{tool}"
+            result = tool_manager.parse_results(tool, data, f"{tool} test command", test_agent_id)
+
+            if result and "findings" in result:
+                for finding in result["findings"]:
+                    # Verify agent_id is present and correct
+                    assert "agent_id" in finding
+                    assert finding["agent_id"] == test_agent_id
+
     def test_finding_targets(self, tool_manager, sample_data):
         """Test that findings have appropriate targets"""
         if not sample_data:
             pytest.skip("No sample data available")
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command")
+            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
 
             if result and "findings" in result:
                 for finding in result["findings"]:
@@ -379,7 +394,7 @@ class TestReportGeneration:
             pytest.skip("No sample data available")
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command")
+            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
 
             if result and "statistics" in result:
                 stats = result["statistics"]
@@ -404,19 +419,19 @@ class TestErrorHandling:
 
         # Test Nmap parser with invalid data
         nmap_parser = NmapParser()
-        result = nmap_parser.parse_single_result(invalid_data, "nmap invalid")
+        result = nmap_parser.parse_single_result(invalid_data, "nmap invalid", "test_agent_001")
         assert "findings" in result
         assert "statistics" in result
 
         # Test FFuf parser with invalid data
         ffuf_parser = FFufParser()
-        result = ffuf_parser.parse_single_result(invalid_data, "ffuf invalid")
+        result = ffuf_parser.parse_single_result(invalid_data, "ffuf invalid", "test_agent_002")
         assert "findings" in result
         assert "statistics" in result
 
         # Test Tshark parser with invalid data
         tshark_parser = TsharkParser()
-        result = tshark_parser.parse_single_result(invalid_data, "tshark invalid")
+        result = tshark_parser.parse_single_result(invalid_data, "tshark invalid", "test_agent_003")
         assert "findings" in result
         assert "statistics" in result
 
@@ -428,6 +443,6 @@ class TestErrorHandling:
 
         # Test parsing with unknown tool
         result = tool_manager.parse_results(
-            "unknown_tool", "some data", "unknown command"
+            "unknown_tool", "some data", "unknown command", "test_agent_unknown"
         )
         assert result is None

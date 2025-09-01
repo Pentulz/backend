@@ -8,7 +8,7 @@ from app.services.tools.tool_parser import BaseParser
 class NmapParser(BaseParser):
     """Parser for Nmap XML output"""
 
-    def parse_single_result(self, raw_output: str, command_used: str) -> Dict:
+    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
         """
         Parse Nmap XML output to standard format
         Returns: {
@@ -19,18 +19,18 @@ class NmapParser(BaseParser):
         try:
             # Try to parse as XML first
             root = ET.fromstring(raw_output)
-            return self._parse_xml_output(root, command_used)
+            return self._parse_xml_output(root, command_used, agent_id)
         except ET.ParseError:
             # Fall back to text parsing if XML fails
-            return self._parse_text_output(raw_output, command_used)
+            return self._parse_text_output(raw_output, command_used, agent_id)
 
-    def _parse_xml_output(self, root: ET.Element, command_used: str) -> Dict:
+    def _parse_xml_output(self, root: ET.Element, command_used: str, agent_id: str = None) -> Dict:
         """Parse Nmap XML output"""
         findings = []
 
         # Parse host information
         for host in root.findall(".//host"):
-            host_findings = self._parse_host(host)
+            host_findings = self._parse_host(host, agent_id)
             findings.extend(host_findings)
 
         # Parse scan statistics
@@ -38,7 +38,7 @@ class NmapParser(BaseParser):
 
         return {"findings": findings, "statistics": stats}
 
-    def _parse_host(self, host: ET.Element) -> List[Dict]:
+    def _parse_host(self, host: ET.Element, agent_id: str = None) -> List[Dict]:
         """Parse individual host information"""
         findings = []
 
@@ -55,7 +55,7 @@ class NmapParser(BaseParser):
 
         # Parse ports and services
         for port_elem in host.findall(".//port"):
-            port_finding = self._parse_port(port_elem, host_ip, hostname)
+            port_finding = self._parse_port(port_elem, host_ip, hostname, agent_id)
             if port_finding:
                 findings.append(port_finding)
 
@@ -72,6 +72,7 @@ class NmapParser(BaseParser):
                     description=f"Detected OS: {os_name} (Accuracy: {os_accuracy}%)",
                     target=host_ip,
                     severity="info",
+                    agent_id=agent_id,
                     timestamp=datetime.now().isoformat(),
                 )
             )
@@ -79,7 +80,7 @@ class NmapParser(BaseParser):
         return findings
 
     def _parse_port(
-        self, port_elem: ET.Element, host_ip: str, hostname: str
+        self, port_elem: ET.Element, host_ip: str, hostname: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse individual port information"""
         port_id = port_elem.get("portid", "0")
@@ -120,6 +121,7 @@ class NmapParser(BaseParser):
             description=description,
             target=target,
             severity=severity,
+            agent_id=agent_id,
             timestamp=datetime.now().isoformat(),
         )
 
@@ -225,7 +227,7 @@ class NmapParser(BaseParser):
 
         return stats
 
-    def _parse_text_output(self, raw_output: str, command_used: str) -> Dict:
+    def _parse_text_output(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
         """Fallback parser for text-based nmap output"""
         findings = []
         lines = raw_output.split("\n")
@@ -237,13 +239,13 @@ class NmapParser(BaseParser):
 
             # Look for port scan results
             if "open" in line and ("tcp" in line or "udp" in line):
-                finding = self._parse_text_port_line(line)
+                finding = self._parse_text_port_line(line, agent_id)
                 if finding:
                     findings.append(finding)
 
             # Look for host discovery
             elif "Nmap scan report for" in line:
-                finding = self._parse_text_host_line(line)
+                finding = self._parse_text_host_line(line, agent_id)
                 if finding:
                     findings.append(finding)
 
@@ -259,7 +261,7 @@ class NmapParser(BaseParser):
             },
         }
 
-    def _parse_text_port_line(self, line: str) -> Optional[Dict]:
+    def _parse_text_port_line(self, line: str, agent_id: str = None) -> Optional[Dict]:
         """Parse a port line from text output"""
         try:
             # Example: "22/tcp   open  ssh"
@@ -280,13 +282,14 @@ class NmapParser(BaseParser):
                         description=f"Open {protocol} port {port_id} - Service: {service}",
                         target=f"Port {port_id}",
                         severity=severity,
+                        agent_id=agent_id,
                         timestamp=datetime.now().isoformat(),
                     )
         except:
             pass
         return None
 
-    def _parse_text_host_line(self, line: str) -> Optional[Dict]:
+    def _parse_text_host_line(self, line: str, agent_id: str = None) -> Optional[Dict]:
         """Parse a host line from text output"""
         try:
             # Example: "Nmap scan report for example.com (192.168.1.1)"
@@ -299,6 +302,7 @@ class NmapParser(BaseParser):
                     description="Nmap discovered host",
                     target=target,
                     severity="info",
+                    agent_id=agent_id,
                     timestamp=datetime.now().isoformat(),
                 )
         except:

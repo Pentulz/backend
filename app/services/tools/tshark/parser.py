@@ -26,7 +26,7 @@ class TsharkParser(BaseParser):
             3389: "RDP",
         }
 
-    def parse_single_result(self, raw_output: str, command_used: str) -> Dict:
+    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
         """Parse tshark JSON output into standardized findings"""
         try:
             packets = json.loads(raw_output)
@@ -45,31 +45,31 @@ class TsharkParser(BaseParser):
                 # Parse different protocol types
                 finding = None
                 if "arp" in layers:
-                    finding = self._parse_arp_packet(layers, frame_num, timestamp)
+                    finding = self._parse_arp_packet(layers, frame_num, timestamp, agent_id)
                     protocols_seen["ARP"] = protocols_seen.get("ARP", 0) + 1
 
                 elif "tcp" in layers and "ip" in layers:
-                    finding = self._parse_tcp_packet(layers, frame_num, timestamp)
+                    finding = self._parse_tcp_packet(layers, frame_num, timestamp, agent_id)
                     protocols_seen["TCP"] = protocols_seen.get("TCP", 0) + 1
 
                 elif "udp" in layers and "ip" in layers:
-                    finding = self._parse_udp_packet(layers, frame_num, timestamp)
+                    finding = self._parse_udp_packet(layers, frame_num, timestamp, agent_id)
                     protocols_seen["UDP"] = protocols_seen.get("UDP", 0) + 1
 
                 elif "http" in layers:
-                    finding = self._parse_http_packet(layers, frame_num, timestamp)
+                    finding = self._parse_http_packet(layers, frame_num, timestamp, agent_id)
                     protocols_seen["HTTP"] = protocols_seen.get("HTTP", 0) + 1
 
                 elif "dns" in layers:
-                    finding = self._parse_dns_packet(layers, frame_num, timestamp)
+                    finding = self._parse_dns_packet(layers, frame_num, timestamp, agent_id)
                     protocols_seen["DNS"] = protocols_seen.get("DNS", 0) + 1
 
                 elif "icmp" in layers:
-                    finding = self._parse_icmp_packet(layers, frame_num, timestamp)
+                    finding = self._parse_icmp_packet(layers, frame_num, timestamp, agent_id)
                     protocols_seen["ICMP"] = protocols_seen.get("ICMP", 0) + 1
 
                 else:
-                    finding = self._parse_generic_packet(layers, frame_num, timestamp)
+                    finding = self._parse_generic_packet(layers, frame_num, timestamp, agent_id)
 
                 if finding:
                     findings.append(finding)
@@ -87,7 +87,7 @@ class TsharkParser(BaseParser):
         }
 
     def _parse_arp_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse ARP packet"""
         arp = layers["arp"]
@@ -105,11 +105,12 @@ class TsharkParser(BaseParser):
             title=f"ARP {arp_type}",
             description=f"ARP {arp_type.lower()} between {src_ip} and {dst_ip}",
             target=f"{src_ip} → {dst_ip}",
+            agent_id=agent_id,
             timestamp=timestamp,
         )
 
     def _parse_tcp_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse TCP packet"""
         tcp = layers["tcp"]
@@ -130,11 +131,12 @@ class TsharkParser(BaseParser):
             title=f"TCP Traffic to {service}",
             description=f"TCP connection from {src_ip}:{src_port} to {dst_ip}:{dst_port}",
             target=f"{src_ip}:{src_port} → {dst_ip}:{dst_port}",
+            agent_id=agent_id,
             timestamp=timestamp,
         )
 
     def _parse_udp_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse UDP packet"""
         udp = layers["udp"]
@@ -155,11 +157,12 @@ class TsharkParser(BaseParser):
             title=f"UDP Traffic to {service}",
             description=f"UDP communication from {src_ip}:{src_port} to {dst_ip}:{dst_port}",
             target=f"{src_ip}:{src_port} → {dst_ip}:{dst_port}",
+            agent_id=agent_id,
             timestamp=timestamp,
         )
 
     def _parse_http_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse HTTP packet"""
         http = layers["http"]
@@ -180,6 +183,7 @@ class TsharkParser(BaseParser):
                 title=f"HTTP {method} Request",
                 description=f"{method} request to {host}{uri}",
                 target=f"{host}{uri}",
+                agent_id=agent_id,
                 timestamp=timestamp,
             )
 
@@ -190,13 +194,14 @@ class TsharkParser(BaseParser):
                 title=f"HTTP {response_code} Response",
                 description=f"HTTP response code {response_code}",
                 target=f"{src_ip} → {dst_ip}",
+                agent_id=agent_id,
                 timestamp=timestamp,
             )
 
         return None
 
     def _parse_dns_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse DNS packet"""
         dns = layers["dns"]
@@ -210,6 +215,7 @@ class TsharkParser(BaseParser):
                 title="DNS Query",
                 description=f"DNS {query_type} query for {query_name}",
                 target=query_name,
+                agent_id=agent_id,
                 timestamp=timestamp,
             )
 
@@ -218,11 +224,12 @@ class TsharkParser(BaseParser):
             title="DNS Response",
             description="DNS response packet",
             target="DNS Server",
+            agent_id=agent_id,
             timestamp=timestamp,
         )
 
     def _parse_icmp_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse ICMP packet"""
         icmp = layers["icmp"]
@@ -250,11 +257,12 @@ class TsharkParser(BaseParser):
             title=f"ICMP {icmp_name}",
             description=f"ICMP {icmp_name} from {src_ip} to {dst_ip}",
             target=f"{src_ip} → {dst_ip}",
+            agent_id=agent_id,
             timestamp=timestamp,
         )
 
     def _parse_generic_packet(
-        self, layers: Dict, frame_num: str, timestamp: str
+        self, layers: Dict, frame_num: str, timestamp: str, agent_id: str = None
     ) -> Optional[Dict]:
         """Parse generic packet when specific protocol parser not available"""
         frame = layers.get("frame", {})
@@ -278,6 +286,7 @@ class TsharkParser(BaseParser):
             title="Network Traffic",
             description=description,
             target=target,
+            agent_id=agent_id,
             timestamp=timestamp,
         )
 

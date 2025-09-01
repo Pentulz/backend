@@ -109,7 +109,7 @@ class ReportsService:
 
             # Parse job results using appropriate tool parser
             parsed_result = await self._parse_job_results(
-                tool_name, raw_output, command
+                tool_name, raw_output, command, str(job.agent_id) if job.agent_id else None
             )
 
             if parsed_result and "findings" in parsed_result:
@@ -177,14 +177,14 @@ class ReportsService:
         return result.scalars().all()
 
     async def _parse_job_results(
-        self, tool_name: str, raw_output: str, command: str
+        self, tool_name: str, raw_output: str, command: str, agent_id: str = None
     ) -> Optional[Dict[str, Any]]:
         """Parse job results using the appropriate tool parser"""
         try:
             # Get tool and parse results
             tool = self.tool_manager.get_tool(tool_name)
             if tool:
-                return tool.parse_results(raw_output, command)
+                return tool.parse_results(raw_output, command, agent_id)
             
             # Fallback for unknown tools
             return {
@@ -195,6 +195,7 @@ class ReportsService:
                         "description": f"Results from unknown tool {tool_name}",
                         "target": "Unknown",
                         "severity": "info",
+                        "agent_id": agent_id or "unknown",
                         "timestamp": datetime.now().isoformat(),
                     }
                 ],
@@ -210,6 +211,7 @@ class ReportsService:
                         "description": f"Failed to parse results from {tool_name}: {str(e)}",
                         "target": "Error",
                         "severity": "critical",
+                        "agent_id": agent_id or "unknown",
                         "timestamp": datetime.now().isoformat(),
                     }
                 ],

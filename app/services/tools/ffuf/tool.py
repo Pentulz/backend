@@ -119,13 +119,13 @@ class FFufTool(BaseTool):
             ),
         ]
 
-    def parse_results(self, raw_output: str, command_used: str) -> Dict[str, Any]:
+    def parse_results(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict[str, Any]:
         """Parse ffuf output"""
         # pylint: disable=import-outside-toplevel
         from app.services.tools.ffuf.parser import FFufParser
 
         parser = FFufParser()
-        return parser.parse_single_result(raw_output, command_used)
+        return parser.parse_single_result(raw_output, command_used, agent_id)
 
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate ffuf command arguments"""
