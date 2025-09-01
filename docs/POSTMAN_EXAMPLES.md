@@ -24,7 +24,7 @@ Content-Type: application/json
   "description": "Scan internal network for open ports and services",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "nmap",
+    "cmd": "nmap",
     "variant": "tcp_connect_scan",
     "args": {
       "target": "192.168.1.171",
@@ -47,7 +47,7 @@ Content-Type: application/json
   "description": "Fuzz web directories for hidden files",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "ffuf",
+    "cmd": "ffuf",
     "variant": "directory_fuzzing",
     "args": {
       "wordlist": "/usr/share/wordlists/dirb/common.txt",
@@ -68,7 +68,7 @@ Content-Type: application/json
   "description": "Capture network traffic for 5 minutes",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "tshark",
+    "cmd": "tshark",
     "variant": "live_capture_duration_only",
     "args": {
       "interface": "eth0",
@@ -89,7 +89,7 @@ Content-Type: application/json
   "description": "Detect operating system of target host",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "nmap",
+    "cmd": "nmap",
     "variant": "os_detection",
     "args": {
       "target": "192.168.1.100"
@@ -109,7 +109,7 @@ Content-Type: application/json
   "description": "Detect service versions on target host",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "nmap",
+    "cmd": "nmap",
     "variant": "service_version_detection",
     "args": {
       "target": "192.168.1.100",
@@ -130,7 +130,7 @@ Content-Type: application/json
   "description": "Fuzz with specific status code matching",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "ffuf",
+    "cmd": "ffuf",
     "variant": "status_code_matching",
     "args": {
       "wordlist": "/usr/share/wordlists/dirb/common.txt",
@@ -152,7 +152,7 @@ Content-Type: application/json
   "description": "Comprehensive security scan with aggressive options",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "nmap",
+    "cmd": "nmap",
     "variant": "aggressive_scan",
     "args": {
       "target": "192.168.1.100"
@@ -172,7 +172,7 @@ Content-Type: application/json
   "description": "Analyze PCAP file with duration filter",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "tshark",
+    "cmd": "tshark",
     "variant": "pcap_duration_filter",
     "args": {
       "pcap_file": "/path/to/capture.pcap",
@@ -191,7 +191,7 @@ Content-Type: application/json
   "description": "Job with invalid tool",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "invalid_tool",
+    "cmd": "invalid_tool",
     "variant": "some_variant",
     "args": {"target": "192.168.1.1"}
   }
@@ -205,7 +205,7 @@ Content-Type: application/json
   "description": "Job with invalid variant",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "nmap",
+    "cmd": "nmap",
     "variant": "invalid_variant",
     "args": {"target": "192.168.1.1"}
   }
@@ -219,7 +219,7 @@ Content-Type: application/json
   "description": "Job with missing arguments",
   "agent_id": "550e8400-e29b-41d4-a716-446655440001",
   "action": {
-    "name": "nmap",
+    "cmd": "nmap",
     "variant": "tcp_connect_scan",
     "args": {
       "target": "192.168.1.1"

@@ -63,13 +63,13 @@ Here are some examples of the responses you can expect from the API.
                 "description": "Build and test iOS application",
                 "agent_id": "550e8400-e29b-41d4-a716-446655440004",
                 "action": {
+                    "cmd": "xcodebuild",
+                    "variant": "ios_build_test",
                     "args": [
                         "-project",
                         "MyApp.xcodeproj",
                         "test"
-                    ],
-                    "scheme": "MyApp",
-                    "command": "xcodebuild"
+                    ]
                 },
                 "started_at": "2025-08-28T07:53:25.256535",
                 "completed_at": null,
@@ -85,13 +85,13 @@ Here are some examples of the responses you can expect from the API.
                 "description": "Scan internal network for open ports and services",
                 "agent_id": "550e8400-e29b-41d4-a716-446655440001",
                 "action": {
+                    "cmd": "nmap",
+                    "variant": "tcp_connect_scan",
                     "args": [
                         "-sS",
                         "-O",
                         "192.168.1.0/24"
-                    ],
-                    "command": "nmap",
-                    "timeout": 300
+                    ]
                 },
                 "started_at": "2025-08-28T06:23:25.256535",
                 "completed_at": "2025-08-28T06:38:25.256535",
@@ -117,12 +117,12 @@ Here are some examples of the responses you can expect from the API.
                 "description": "Check PostgreSQL database performance and connections",
                 "agent_id": "550e8400-e29b-41d4-a716-446655440002",
                 "action": {
+                    "cmd": "psql",
+                    "variant": "database_health_check",
                     "args": [
                         "-c",
                         "SELECT COUNT(*) FROM pg_stat_activity;"
-                    ],
-                    "command": "psql",
-                    "database": "production"
+                    ]
                 },
                 "started_at": "2025-08-28T02:23:25.256535",
                 "completed_at": "2025-08-28T02:23:55.256535",
@@ -223,13 +223,13 @@ Here are some examples of the responses you can expect from the API.
             "description": "Scan internal network for open ports and services",
             "agent_id": "550e8400-e29b-41d4-a716-446655440001",
             "action": {
+                "cmd": "nmap",
+                "variant": "tcp_connect_scan",
                 "args": [
                     "-sS",
                     "-O",
                     "192.168.1.0/24"
-                ],
-                "command": "nmap",
-                "timeout": 300
+                ]
             },
             "started_at": "2025-08-28T06:23:25.256535",
             "completed_at": "2025-08-28T06:38:25.256535",

@@ -47,15 +47,15 @@ class JobsService:
         tool_manager = ToolManager()
 
         # Check if tool exists
-        tool = tool_manager.get_tool(job.action.name)
+        tool = tool_manager.get_tool(job.action.cmd)
         if not tool:
-            raise CreateError(f"Tool '{job.action.name}' is not available")
+            raise CreateError(f"Tool '{job.action.cmd}' is not available")
 
         # Check if template exists
-        template = tool_manager.get_tool_variant(job.action.name, job.action.variant)
+        template = tool_manager.get_tool_variant(job.action.cmd, job.action.variant)
         if not template:
             raise CreateError(
-                f"Template '{job.action.variant}' not found for tool '{job.action.name}'"
+                f"Template '{job.action.variant}' not found for tool '{job.action.cmd}'"
             )
 
         # Validate that all required arguments are provided
@@ -63,16 +63,16 @@ class JobsService:
             if arg_def["required"] and arg_def["name"] not in job.action.args:
                 if arg_def["default_value"] is None:
                     raise CreateError(
-                        f"Required argument '{arg_def['name']}' missing for action '{job.action.name}'"
+                        f"Required argument '{arg_def['name']}' missing for action '{job.action.cmd}'"
                     )
 
         # Build command to validate it
         command_args = tool_manager.build_command_from_variant(
-            job.action.name, job.action.variant, job.action.args
+            job.action.cmd, job.action.variant, job.action.args
         )
         if not command_args:
             raise CreateError(
-                f"Failed to build command for action '{job.action.name}' with template '{job.action.variant}'"
+                f"Failed to build command for action '{job.action.cmd}' with template '{job.action.variant}'"
             )
 
         # Store the complete command with export arguments

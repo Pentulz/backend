@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field, validator
 
@@ -8,16 +8,16 @@ from pydantic import BaseModel, Field, validator
 class JobAction(BaseModel):
     """Schema for job action using tool templates"""
 
-    name: str = Field(..., description="Tool name (e.g., 'nmap', 'ffuf')")
+    cmd: str = Field(..., description="Tool command (e.g., 'tshark', 'nmap', 'ffuf')")
     variant: str = Field(
-        ..., description="Template ID (e.g., 'tcp_connect_scan', 'directory_fuzzing')"
+        ..., description="Template ID (e.g., 'live_capture_duration_only', 'tcp_connect_scan', 'directory_fuzzing')"
     )
     args: Dict[str, Any] = Field(..., description="Custom arguments for the template")
 
-    @validator("name")
-    def validate_name(cls, v):
+    @validator("cmd")
+    def validate_cmd(cls, v):
         if not v or not v.strip():
-            raise ValueError("Tool name cannot be empty")
+            raise ValueError("Tool command cannot be empty")
         return v.strip()
 
     @validator("variant")
@@ -36,12 +36,12 @@ class JobAction(BaseModel):
 class JobActionResponse(BaseModel):
     """Schema for job action response - can handle both original args and built command"""
 
-    name: str = Field(..., description="Tool name (e.g., 'nmap', 'ffuf')")
+    cmd: str = Field(..., description="Tool command (e.g., 'tshark', 'nmap', 'ffuf')")
     variant: str = Field(
-        ..., description="Template ID (e.g., 'tcp_connect_scan', 'directory_fuzzing')"
+        ..., description="Template ID (e.g., 'live_capture_duration_only', 'tcp_connect_scan', 'directory_fuzzing')"
     )
-    args: Union[Dict[str, Any], list] = Field(
-        ..., description="Custom arguments or built command"
+    args: list[str] = Field(
+        ..., description="Command arguments as list of strings"
     )
 
 

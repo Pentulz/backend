@@ -23,7 +23,7 @@ class TestJobCreation:
         """Test creating a valid Nmap job"""
         # Create job action
         action = JobAction(
-            name="nmap",
+            cmd="nmap",
             variant="tcp_connect_scan",
             args={"target": "192.168.1.171", "ports": "80,443,1000-2000"},
         )
@@ -38,14 +38,14 @@ class TestJobCreation:
 
         # Verify job structure
         assert job.name == "Port Scan Internal Network"
-        assert job.action.name == "nmap"
+        assert job.action.cmd == "nmap"
         assert job.action.variant == "tcp_connect_scan"
         assert job.action.args["target"] == "192.168.1.171"
         assert job.action.args["ports"] == "80,443,1000-2000"
 
         # Test command building
         command = tool_manager.build_command_from_variant(
-            job.action.name, job.action.variant, job.action.args
+            job.action.cmd, job.action.variant, job.action.args
         )
         assert command is not None
         assert "-sT" in command
@@ -55,7 +55,7 @@ class TestJobCreation:
     def test_create_valid_ffuf_job(self, tool_manager):
         """Test creating a valid FFuf job"""
         action = JobAction(
-            name="ffuf",
+            cmd="ffuf",
             variant="directory_fuzzing",
             args={
                 "wordlist": "/usr/share/wordlists/dirb/common.txt",
@@ -70,12 +70,12 @@ class TestJobCreation:
             action=action,
         )
 
-        assert job.action.name == "ffuf"
+        assert job.action.cmd == "ffuf"
         assert job.action.variant == "directory_fuzzing"
 
         # Test command building
         command = tool_manager.build_command_from_variant(
-            job.action.name, job.action.variant, job.action.args
+            job.action.cmd, job.action.variant, job.action.args
         )
         assert command is not None
         assert "-w" in command
@@ -84,7 +84,7 @@ class TestJobCreation:
     def test_create_valid_tshark_job(self, tool_manager):
         """Test creating a valid Tshark job"""
         action = JobAction(
-            name="tshark",
+            cmd="tshark",
             variant="live_capture_duration_only",
             args={"interface": "eth0", "duration": "60"},
         )
@@ -96,12 +96,12 @@ class TestJobCreation:
             action=action,
         )
 
-        assert job.action.name == "tshark"
+        assert job.action.cmd == "tshark"
         assert job.action.variant == "live_capture_duration_only"
 
         # Test command building
         command = tool_manager.build_command_from_variant(
-            job.action.name, job.action.variant, job.action.args
+            job.action.cmd, job.action.variant, job.action.args
         )
         assert command is not None
         assert "-i" in command
@@ -110,7 +110,7 @@ class TestJobCreation:
     def test_invalid_tool_name(self):
         """Test job creation with invalid tool name"""
         action = JobAction(
-            name="invalid_tool", variant="some_variant", args={"target": "192.168.1.1"}
+            cmd="invalid_tool", variant="some_variant", args={"target": "192.168.1.1"}
         )
 
         job = JobCreate(
@@ -121,12 +121,12 @@ class TestJobCreation:
         )
 
         # This should pass Pydantic validation but fail in service validation
-        assert job.action.name == "invalid_tool"
+        assert job.action.cmd == "invalid_tool"
 
     def test_invalid_variant(self):
         """Test job creation with invalid variant"""
         action = JobAction(
-            name="nmap", variant="invalid_variant", args={"target": "192.168.1.1"}
+            cmd="nmap", variant="invalid_variant", args={"target": "192.168.1.1"}
         )
 
         job = JobCreate(
@@ -142,7 +142,7 @@ class TestJobCreation:
     def test_missing_required_arguments(self):
         """Test job creation with missing required arguments"""
         action = JobAction(
-            name="nmap",
+            cmd="nmap",
             variant="tcp_connect_scan",
             args={
                 "target": "192.168.1.1"
@@ -164,24 +164,24 @@ class TestJobCreation:
         """Test JobAction validation rules"""
         # Valid action
         valid_action = JobAction(
-            name="nmap",
+            cmd="nmap",
             variant="tcp_connect_scan",
             args={"target": "192.168.1.1", "ports": "80,443"},
         )
-        assert valid_action.name == "nmap"
+        assert valid_action.cmd == "nmap"
         assert valid_action.variant == "tcp_connect_scan"
 
-        # Test empty name (should fail)
-        with pytest.raises(ValueError, match=".*Tool name cannot be empty.*"):
-            JobAction(name="", variant="test", args={})
+        # Test empty cmd (should fail)
+        with pytest.raises(ValueError, match=".*Tool command cannot be empty.*"):
+            JobAction(cmd="", variant="test", args={})
 
         # Test empty variant (should fail)
         with pytest.raises(ValueError, match=".*Template variant cannot be empty.*"):
-            JobAction(name="nmap", variant="", args={})
+            JobAction(cmd="nmap", variant="", args={})
 
         # Test invalid args type (should fail)
         with pytest.raises(ValueError, match=".*Input should be a valid dictionary.*"):
-            JobAction(name="nmap", variant="test", args="not_a_dict")
+            JobAction(cmd="nmap", variant="test", args="not_a_dict")
 
     def test_job_create_validation(self):
         """Test JobCreate validation rules"""
@@ -191,7 +191,7 @@ class TestJobCreation:
             description="Test description",
             agent_id="550e8400-e29b-41d4-a716-446655440001",
             action=JobAction(
-                name="nmap",
+                cmd="nmap",
                 variant="tcp_connect_scan",
                 args={"target": "192.168.1.1", "ports": "80,443"},
             ),
@@ -207,7 +207,7 @@ class TestJobCreation:
                 description="Test",
                 agent_id="550e8400-e29b-41d4-a716-446655440001",
                 action=JobAction(
-                    name="nmap",
+                    cmd="nmap",
                     variant="tcp_connect_scan",
                     args={"target": "192.168.1.1", "ports": "80,443"},
                 ),

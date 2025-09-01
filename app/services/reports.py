@@ -99,9 +99,13 @@ class ReportsService:
 
         # Process each job
         for job in jobs:
-            tool_name = job.action.get("name", "unknown")
+            tool_name = job.action.get("cmd", "unknown")
             raw_output = job.results if job.results else ""
-            command = job.action.get("command", "")
+            
+            # Reconstruct command from new action format
+            cmd = job.action.get("cmd", "")
+            args = job.action.get("args", [])
+            command = f"{cmd} {' '.join(args)}" if cmd and args else ""
 
             # Parse job results using appropriate tool parser
             parsed_result = await self._parse_job_results(
