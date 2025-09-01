@@ -24,6 +24,7 @@ CREATE TABLE jobs (
     description TEXT,
     action JSONB NOT NULL,
     results TEXT,
+    success BOOLEAN DEFAULT FALSE,
     started_at TIMESTAMP WITH TIME ZONE,
     completed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

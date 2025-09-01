@@ -299,6 +299,7 @@ async def get_agent_jobs(
             started_at=job.started_at,
             completed_at=job.completed_at,
             created_at=job.created_at,
+            success=job.success,
         ).model_dump(mode="json")
         for job in jobs
     ]

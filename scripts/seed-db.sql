@@ -52,27 +52,27 @@ INSERT INTO agents (id, name, hostname, description, platform, available_tools, 
 );
 
 -- Insert sample jobs
-INSERT INTO jobs (id, agent_id, name, description, action, started_at, completed_at, created_at) VALUES
+INSERT INTO jobs (id, agent_id, name, description, action, started_at, completed_at, created_at, success) VALUES
 ('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 'Port Scan Internal Network',
  'Scan internal network for open ports and services',
  '{"cmd": "nmap", "variant": "tcp_connect_scan", "args": ["-sT", "-p", "80,443,1000-2000", "192.168.1.171"]}'::jsonb,
- NOW() - INTERVAL '2 hours', NULL, NOW() - INTERVAL '3 hours'),
+ NOW() - INTERVAL '2 hours', NULL, NOW() - INTERVAL '3 hours', FALSE),
 ('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440002', 'Database Health Check',
  'Check PostgreSQL database performance and connections',
  '{"cmd": "psql", "variant": "custom_command", "args": ["-c", "SELECT COUNT(*) FROM pg_stat_activity;", "-d", "production"]}'::jsonb,
- NOW() - INTERVAL '6 hours', NOW() - INTERVAL '5 hours 59 minutes 30 seconds', NOW() - INTERVAL '8 hours'),
+ NOW() - INTERVAL '6 hours', NOW() - INTERVAL '5 hours 59 minutes 30 seconds', NOW() - INTERVAL '8 hours', TRUE),
 ('660e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440001', 'Web Directory Fuzzing',
  'Run directory fuzzing on web application',
  '{"cmd": "ffuf", "variant": "directory_fuzzing", "args": ["-w", "/usr/share/wordlists/dirb/common.txt", "-u", "https://example.com/FUZZ"]}'::jsonb,
- NOW() - INTERVAL '12 hours', NOW() - INTERVAL '10 hours', NOW() - INTERVAL '1 day'),
+ NOW() - INTERVAL '12 hours', NOW() - INTERVAL '10 hours', NOW() - INTERVAL '1 day', TRUE),
 ('660e8400-e29b-41d4-a716-446655440004', '550e8400-e29b-41d4-a716-446655440003', 'Network Traffic Capture',
  'Capture network traffic for analysis',
  '{"cmd": "tshark", "variant": "live_capture_duration_only", "args": ["-i", "eth0", "--duration", "300"]}'::jsonb,
- NOW() - INTERVAL '1 day', NOW() - INTERVAL '23 hours', NOW() - INTERVAL '2 days'),
+ NOW() - INTERVAL '1 day', NOW() - INTERVAL '23 hours', NOW() - INTERVAL '2 days', TRUE),
 ('660e8400-e29b-41d4-a716-446655440005', '550e8400-e29b-41d4-a716-446655440004', 'OS Detection Scan',
  'Detect operating system of target host',
  '{"cmd": "nmap", "variant": "os_detection", "args": ["-O", "192.168.1.100"]}'::jsonb,
- NOW() - INTERVAL '30 minutes', NULL, NOW() - INTERVAL '45 minutes');
+ NOW() - INTERVAL '30 minutes', NULL, NOW() - INTERVAL '45 minutes', FALSE);
 
 -- Update jobs results if column exists
 DO $$

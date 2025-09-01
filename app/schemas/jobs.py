@@ -58,7 +58,7 @@ class Job(BaseModel):
     completed_at: Optional[datetime] = None
     created_at: datetime
     results: Optional[str] = None
-
+    success: bool = False
 
 class JobCreate(BaseModel):
     name: str = Field(..., min_length=1, description="Job name")
@@ -87,7 +87,8 @@ class JobUpdate(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     results: Optional[str] = None
-
+    success: Optional[bool] = None
+    
     @validator("name")
     def validate_name(cls, v):
         if v is not None and not v.strip():
@@ -119,6 +120,7 @@ class JobAttributes(BaseModel):
         None, description="When the job completed (ISO format)"
     )
     created_at: str = Field(..., description="When the job was created (ISO format)")
+    success: bool = Field(..., description="Whether the job was successful")
 
 
 class JobResponse(BaseModel):

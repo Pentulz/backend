@@ -51,6 +51,7 @@ async def get_jobs(db: AsyncSession = Depends(get_db)):
             started_at=job.started_at,
             completed_at=job.completed_at,
             created_at=job.created_at,
+            success=job.success,
         ).model_dump(mode="json")
         for job in jobs
     ]
@@ -137,6 +138,7 @@ async def get_job(job_id: str, db: AsyncSession = Depends(get_db)):
         started_at=job.started_at,
         completed_at=job.completed_at,
         created_at=job.created_at,
+        success=job.success,
     )
 
     return create_success_response(
@@ -193,6 +195,7 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
     """
 
     if not cast_uuid(job_id):
+        print("Invalid job id")
         return create_error_response("400", "Bad Request", "Invalid job id", 400)
 
     try:
@@ -203,12 +206,13 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
             id=job.id,
             name=job.name,
             action=job.action,
-            agent_id=job.agent_id,
+            agent_id=job.agent_id,  
             description=job.description,
             results=job.results,
             started_at=job.started_at,
             completed_at=job.completed_at,
             created_at=job.created_at,
+            success=job.success,
         )
 
         return create_success_response(

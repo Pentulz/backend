@@ -7,6 +7,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     PrimaryKeyConstraint,
+    Boolean,
     Text,
     Uuid,
     text,
@@ -36,8 +37,7 @@ class Jobs(Base):
     agent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
     description: Mapped[Optional[str]] = mapped_column(Text)
     results: Mapped[Optional[str]] = mapped_column(Text)
-    # started_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
-    # completed_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    success: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")
     )
