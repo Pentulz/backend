@@ -58,7 +58,7 @@ class Job(BaseModel):
     completed_at: Optional[datetime] = None
     created_at: datetime
     results: Optional[str] = None
-    success: bool = False
+    success: Optional[bool] = None
 
 class JobCreate(BaseModel):
     name: str = Field(..., min_length=1, description="Job name")
@@ -120,7 +120,7 @@ class JobAttributes(BaseModel):
         None, description="When the job completed (ISO format)"
     )
     created_at: str = Field(..., description="When the job was created (ISO format)")
-    success: bool = Field(..., description="Whether the job was successful")
+    success: Optional[bool] = Field(None, description="Whether the job was successful")
 
 
 class JobResponse(BaseModel):

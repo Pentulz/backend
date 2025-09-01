@@ -56,7 +56,7 @@ INSERT INTO jobs (id, agent_id, name, description, action, started_at, completed
 ('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 'Port Scan Internal Network',
  'Scan internal network for open ports and services',
  '{"cmd": "nmap", "variant": "tcp_connect_scan", "args": ["-sT", "-p", "80,443,1000-2000", "192.168.1.171"]}'::jsonb,
- NOW() - INTERVAL '2 hours', NULL, NOW() - INTERVAL '3 hours', FALSE),
+ NOW() - INTERVAL '2 hours', NULL, NOW() - INTERVAL '3 hours', NULL),
 ('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440002', 'Database Health Check',
  'Check PostgreSQL database performance and connections',
  '{"cmd": "psql", "variant": "custom_command", "args": ["-c", "SELECT COUNT(*) FROM pg_stat_activity;", "-d", "production"]}'::jsonb,
@@ -72,7 +72,7 @@ INSERT INTO jobs (id, agent_id, name, description, action, started_at, completed
 ('660e8400-e29b-41d4-a716-446655440005', '550e8400-e29b-41d4-a716-446655440004', 'OS Detection Scan',
  'Detect operating system of target host',
  '{"cmd": "nmap", "variant": "os_detection", "args": ["-O", "192.168.1.100"]}'::jsonb,
- NOW() - INTERVAL '30 minutes', NULL, NOW() - INTERVAL '45 minutes', FALSE);
+ NOW() - INTERVAL '30 minutes', NULL, NOW() - INTERVAL '45 minutes', NULL);
 
 -- Update jobs results if column exists
 DO $$

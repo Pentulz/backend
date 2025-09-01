@@ -37,7 +37,7 @@ class Jobs(Base):
     agent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
     description: Mapped[Optional[str]] = mapped_column(Text)
     results: Mapped[Optional[str]] = mapped_column(Text)
-    success: Mapped[bool] = mapped_column(Boolean, default=False)
+    success: Mapped[Optional[bool]] = mapped_column(Boolean, default=None)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")
     )
