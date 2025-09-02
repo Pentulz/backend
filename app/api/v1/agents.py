@@ -23,6 +23,7 @@ from app.schemas.response_models import (
     MessageResponse,
 )
 from app.services.agents import AgentsService
+from app.services.tools.tool_manager import ToolManager
 from app.utils.uuid import cast_uuid
 
 router = APIRouter()
@@ -288,20 +289,41 @@ async def get_agent_jobs(
     if not jobs:
         return create_success_response_list("jobs", [])
 
-    response = [
-        Job(
-            id=job.id,
-            name=job.name,
-            action=job.action,
-            agent_id=job.agent_id,
-            description=job.description,
-            results=job.results,
-            started_at=job.started_at,
-            completed_at=job.completed_at,
-            created_at=job.created_at,
-            success=job.success,
-        ).model_dump(mode="json")
-        for job in jobs
-    ]
+    tool_manager = ToolManager()
+
+    response = []
+    for job in jobs:
+        action = job.action or {}
+        cmd = action.get("cmd")
+        args = action.get("args", [])
+
+        if cmd:
+            tool = tool_manager.get_tool(cmd)
+            if tool:
+                export_args = tool.export_arguments or []
+                if export_args:
+                    needs_append = True
+                    if len(args) >= len(export_args):
+                        if args[-len(export_args):] == export_args:
+                            needs_append = False
+                    if needs_append:
+                        args = list(args) + list(export_args)
+
+        updated_action = {**action, "args": args}
+
+        response.append(
+            Job(
+                id=job.id,
+                name=job.name,
+                action=updated_action,
+                agent_id=job.agent_id,
+                description=job.description,
+                results=job.results,
+                started_at=job.started_at,
+                completed_at=job.completed_at,
+                created_at=job.created_at,
+                success=job.success,
+            ).model_dump(mode="json")
+        )
 
     return create_success_response_list("jobs", response)
