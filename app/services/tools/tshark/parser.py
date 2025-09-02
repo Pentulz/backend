@@ -26,7 +26,9 @@ class TsharkParser(BaseParser):
             3389: "RDP",
         }
 
-    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
+    def parse_single_result(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict:
         """Parse tshark JSON output into standardized findings"""
         try:
             packets = json.loads(raw_output)
@@ -45,31 +47,45 @@ class TsharkParser(BaseParser):
                 # Parse different protocol types
                 finding = None
                 if "arp" in layers:
-                    finding = self._parse_arp_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_arp_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
                     protocols_seen["ARP"] = protocols_seen.get("ARP", 0) + 1
 
                 elif "tcp" in layers and "ip" in layers:
-                    finding = self._parse_tcp_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_tcp_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
                     protocols_seen["TCP"] = protocols_seen.get("TCP", 0) + 1
 
                 elif "udp" in layers and "ip" in layers:
-                    finding = self._parse_udp_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_udp_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
                     protocols_seen["UDP"] = protocols_seen.get("UDP", 0) + 1
 
                 elif "http" in layers:
-                    finding = self._parse_http_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_http_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
                     protocols_seen["HTTP"] = protocols_seen.get("HTTP", 0) + 1
 
                 elif "dns" in layers:
-                    finding = self._parse_dns_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_dns_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
                     protocols_seen["DNS"] = protocols_seen.get("DNS", 0) + 1
 
                 elif "icmp" in layers:
-                    finding = self._parse_icmp_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_icmp_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
                     protocols_seen["ICMP"] = protocols_seen.get("ICMP", 0) + 1
 
                 else:
-                    finding = self._parse_generic_packet(layers, frame_num, timestamp, agent_id)
+                    finding = self._parse_generic_packet(
+                        layers, frame_num, timestamp, agent_id
+                    )
 
                 if finding:
                     findings.append(finding)

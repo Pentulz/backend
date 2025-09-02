@@ -8,7 +8,9 @@ from app.services.tools.tool_parser import BaseParser
 class FFufParser(BaseParser):
     """Parser for FFuf JSON output"""
 
-    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
+    def parse_single_result(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict:
         """
         Parse FFuf JSON output to standard format
         Returns: {
@@ -24,7 +26,9 @@ class FFufParser(BaseParser):
             # Fall back to text parsing if JSON fails
             return self._parse_text_output(raw_output, command_used, agent_id)
 
-    def _parse_json_output(self, data: Dict, command_used: str, agent_id: str = None) -> Dict:
+    def _parse_json_output(
+        self, data: Dict, command_used: str, agent_id: str = None
+    ) -> Dict:
         """Parse FFuf JSON output"""
         findings = []
 
@@ -40,7 +44,9 @@ class FFufParser(BaseParser):
 
         return {"findings": findings, "statistics": stats}
 
-    def _parse_result(self, result: Dict, command_used: str, agent_id: str = None) -> Optional[Dict]:
+    def _parse_result(
+        self, result: Dict, command_used: str, agent_id: str = None
+    ) -> Optional[Dict]:
         """Parse individual FFuf result"""
         url = result.get("url", "")
         status = result.get("status", 0)
@@ -130,7 +136,9 @@ class FFufParser(BaseParser):
             "wordlist_size": config.get("wordlist", "unknown"),
         }
 
-    def _parse_text_output(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
+    def _parse_text_output(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict:
         """Fallback parser for text-based ffuf output"""
         findings = []
         lines = raw_output.split("\n")
@@ -158,7 +166,9 @@ class FFufParser(BaseParser):
             },
         }
 
-    def _parse_text_result_line(self, line: str, agent_id: str = None) -> Optional[Dict]:
+    def _parse_text_result_line(
+        self, line: str, agent_id: str = None
+    ) -> Optional[Dict]:
         """Parse a result line from text output"""
         try:
             # Example: "200     1234   /admin"

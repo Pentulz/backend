@@ -92,7 +92,9 @@ class TestParsers:
 
         parser = NmapParser()
         result = parser.parse_single_result(
-            sample_data["nmap"], "nmap -sS -p 22,80,443,8080 192.168.1.1", "test_agent_001"
+            sample_data["nmap"],
+            "nmap -sS -p 22,80,443,8080 192.168.1.1",
+            "test_agent_001",
         )
 
         # Verify structure
@@ -130,7 +132,9 @@ class TestParsers:
 
         parser = FFufParser()
         result = parser.parse_single_result(
-            sample_data["ffuf"], "ffuf -w wordlist.txt -u http://example.com/FUZZ", "test_agent_002"
+            sample_data["ffuf"],
+            "ffuf -w wordlist.txt -u http://example.com/FUZZ",
+            "test_agent_002",
         )
 
         # Verify structure
@@ -248,7 +252,9 @@ class TestReportGeneration:
         all_statistics = {}
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
+            result = tool_manager.parse_results(
+                tool, data, f"{tool} test command", f"test_agent_{tool}"
+            )
 
             if result and "findings" in result and "statistics" in result:
                 all_findings.extend(result["findings"])
@@ -310,7 +316,9 @@ class TestReportGeneration:
         severity_levels = set()
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
+            result = tool_manager.parse_results(
+                tool, data, f"{tool} test command", f"test_agent_{tool}"
+            )
 
             if result and "findings" in result:
                 for finding in result["findings"]:
@@ -330,7 +338,9 @@ class TestReportGeneration:
 
         for tool, data in sample_data.items():
             test_agent_id = f"test_agent_{tool}"
-            result = tool_manager.parse_results(tool, data, f"{tool} test command", test_agent_id)
+            result = tool_manager.parse_results(
+                tool, data, f"{tool} test command", test_agent_id
+            )
 
             if result and "findings" in result:
                 for finding in result["findings"]:
@@ -344,7 +354,9 @@ class TestReportGeneration:
             pytest.skip("No sample data available")
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
+            result = tool_manager.parse_results(
+                tool, data, f"{tool} test command", f"test_agent_{tool}"
+            )
 
             if result and "findings" in result:
                 for finding in result["findings"]:
@@ -394,7 +406,9 @@ class TestReportGeneration:
             pytest.skip("No sample data available")
 
         for tool, data in sample_data.items():
-            result = tool_manager.parse_results(tool, data, f"{tool} test command", f"test_agent_{tool}")
+            result = tool_manager.parse_results(
+                tool, data, f"{tool} test command", f"test_agent_{tool}"
+            )
 
             if result and "statistics" in result:
                 stats = result["statistics"]
@@ -419,19 +433,25 @@ class TestErrorHandling:
 
         # Test Nmap parser with invalid data
         nmap_parser = NmapParser()
-        result = nmap_parser.parse_single_result(invalid_data, "nmap invalid", "test_agent_001")
+        result = nmap_parser.parse_single_result(
+            invalid_data, "nmap invalid", "test_agent_001"
+        )
         assert "findings" in result
         assert "statistics" in result
 
         # Test FFuf parser with invalid data
         ffuf_parser = FFufParser()
-        result = ffuf_parser.parse_single_result(invalid_data, "ffuf invalid", "test_agent_002")
+        result = ffuf_parser.parse_single_result(
+            invalid_data, "ffuf invalid", "test_agent_002"
+        )
         assert "findings" in result
         assert "statistics" in result
 
         # Test Tshark parser with invalid data
         tshark_parser = TsharkParser()
-        result = tshark_parser.parse_single_result(invalid_data, "tshark invalid", "test_agent_003")
+        result = tshark_parser.parse_single_result(
+            invalid_data, "tshark invalid", "test_agent_003"
+        )
         assert "findings" in result
         assert "statistics" in result
 

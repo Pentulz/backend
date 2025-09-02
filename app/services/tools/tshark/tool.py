@@ -156,7 +156,9 @@ class TsharkTool(BaseTool):
             ),
         ]
 
-    def parse_results(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict[str, Any]:
+    def parse_results(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict[str, Any]:
         """Parse tshark output"""
         # pylint: disable=import-outside-toplevel
         from app.services.tools.tshark.parser import TsharkParser

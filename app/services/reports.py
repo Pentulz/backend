@@ -104,7 +104,7 @@ class ReportsService:
         for job in jobs:
             tool_name = job.action.get("cmd", "unknown")
             raw_output = job.results if job.results else ""
-            
+
             # Reconstruct command from new action format
             cmd = job.action.get("cmd", "")
             args = job.action.get("args", [])
@@ -112,7 +112,10 @@ class ReportsService:
 
             # Parse job results using appropriate tool parser
             parsed_result = await self._parse_job_results(
-                tool_name, raw_output, command, str(job.agent_id) if job.agent_id else None
+                tool_name,
+                raw_output,
+                command,
+                str(job.agent_id) if job.agent_id else None,
             )
 
             if parsed_result and "findings" in parsed_result:
@@ -189,7 +192,7 @@ class ReportsService:
             tool = self.tool_manager.get_tool(tool_name)
             if tool:
                 return tool.parse_results(raw_output, command, agent_id)
-            
+
             # Fallback for unknown tools
             return {
                 "findings": [

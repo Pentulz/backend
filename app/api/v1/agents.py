@@ -304,7 +304,7 @@ async def get_agent_jobs(
                 if export_args:
                     needs_append = True
                     if len(args) >= len(export_args):
-                        if args[-len(export_args):] == export_args:
+                        if args[-len(export_args) :] == export_args:
                             needs_append = False
                     if needs_append:
                         args = list(args) + list(export_args)

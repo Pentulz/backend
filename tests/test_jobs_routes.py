@@ -1,11 +1,11 @@
+import uuid
+from datetime import datetime
+
 from fastapi.testclient import TestClient
 
-from app.main import app
 import app.api.v1.jobs as jobs_module
-from app.core.database import get_db
-from app.core.database import database
-from datetime import datetime
-import uuid
+from app.core.database import database, get_db
+from app.main import app
 
 
 class FakeJobsService:
@@ -14,7 +14,11 @@ class FakeJobsService:
             id = uuid.uuid4()
             name = "scan"
             # The API returns JobActionResponse with args list; internally service returns serialized dict
-            action = {"cmd": "nmap", "variant": "tcp_connect_scan", "args": ["-sV", "example.com"]}
+            action = {
+                "cmd": "nmap",
+                "variant": "tcp_connect_scan",
+                "args": ["-sV", "example.com"],
+            }
             agent_id = uuid.uuid4()
             description = None
             results = None
@@ -58,7 +62,11 @@ def test_create_job_ok(monkeypatch):
             class Obj:
                 id = uuid.uuid4()
                 name = job_create.name
-                action = {"cmd": job_create.action.cmd, "variant": job_create.action.variant, "args": ["-sV", "example.com"]}
+                action = {
+                    "cmd": job_create.action.cmd,
+                    "variant": job_create.action.variant,
+                    "args": ["-sV", "example.com"],
+                }
                 agent_id = uuid.uuid4()
                 description = job_create.description
                 results = None
@@ -81,7 +89,11 @@ def test_create_job_ok(monkeypatch):
             "name": "scan",
             "description": "desc",
             "agent_id": str(uuid.uuid4()),
-            "action": {"cmd": "nmap", "variant": "tcp_connect_scan", "args": {"target": "example.com"}},
+            "action": {
+                "cmd": "nmap",
+                "variant": "tcp_connect_scan",
+                "args": {"target": "example.com"},
+            },
         }
         r = client.post("/api/v1/jobs", json=payload)
         assert r.status_code == 200
@@ -100,7 +112,11 @@ def test_update_job_ok(monkeypatch):
             class Obj:
                 id = uuid.UUID(job_id)
                 name = job_update.name or "scan"
-                action = {"cmd": "nmap", "variant": "tcp_connect_scan", "args": ["-sV", "example.com"]}
+                action = {
+                    "cmd": "nmap",
+                    "variant": "tcp_connect_scan",
+                    "args": ["-sV", "example.com"],
+                }
                 agent_id = uuid.uuid4()
                 description = job_update.description or None
                 results = None
@@ -174,7 +190,10 @@ def test_delete_job_ok_and_not_found(monkeypatch):
         # OK case
         r_ok = client.delete(f"/api/v1/jobs/{job_id_ok}")
         assert r_ok.status_code == 200
-        assert r_ok.json().get("data", {}).get("attributes", {}).get("message") == "Job deleted"
+        assert (
+            r_ok.json().get("data", {}).get("attributes", {}).get("message")
+            == "Job deleted"
+        )
 
         # Not found case
         r_nf = client.delete(f"/api/v1/jobs/{job_id_missing}")
@@ -190,7 +209,11 @@ def test_jobs_datetime_fields_are_iso(monkeypatch):
             class Obj:
                 id = uuid.uuid4()
                 name = "scan-iso"
-                action = {"cmd": "nmap", "variant": "tcp_connect_scan", "args": ["-sV", "example.com"]}
+                action = {
+                    "cmd": "nmap",
+                    "variant": "tcp_connect_scan",
+                    "args": ["-sV", "example.com"],
+                }
                 agent_id = uuid.uuid4()
                 description = None
                 results = None
@@ -219,4 +242,3 @@ def test_jobs_datetime_fields_are_iso(monkeypatch):
             assert isinstance(attrs["completed_at"], str)
     finally:
         app.dependency_overrides.clear()
-

@@ -8,7 +8,9 @@ from app.services.tools.tool_parser import BaseParser
 class NmapParser(BaseParser):
     """Parser for Nmap XML output"""
 
-    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
+    def parse_single_result(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict:
         """
         Parse Nmap XML output to standard format
         Returns: {
@@ -24,7 +26,9 @@ class NmapParser(BaseParser):
             # Fall back to text parsing if XML fails
             return self._parse_text_output(raw_output, command_used, agent_id)
 
-    def _parse_xml_output(self, root: ET.Element, command_used: str, agent_id: str = None) -> Dict:
+    def _parse_xml_output(
+        self, root: ET.Element, command_used: str, agent_id: str = None
+    ) -> Dict:
         """Parse Nmap XML output"""
         findings = []
 
@@ -227,7 +231,9 @@ class NmapParser(BaseParser):
 
         return stats
 
-    def _parse_text_output(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
+    def _parse_text_output(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict:
         """Fallback parser for text-based nmap output"""
         findings = []
         lines = raw_output.split("\n")

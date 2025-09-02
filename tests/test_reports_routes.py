@@ -1,11 +1,11 @@
+import uuid
+from datetime import datetime
+
 from fastapi.testclient import TestClient
 
-from app.main import app
 import app.api.v1.reports as reports_module
-from app.core.database import get_db
-from app.core.database import database
-from datetime import datetime
-import uuid
+from app.core.database import database, get_db
+from app.main import app
 
 
 class FakeReportsService:
@@ -25,7 +25,9 @@ async def _override_db():
 
 
 def test_get_reports_ok(monkeypatch):
-    monkeypatch.setattr(reports_module, "ReportsService", lambda db: FakeReportsService())
+    monkeypatch.setattr(
+        reports_module, "ReportsService", lambda db: FakeReportsService()
+    )
     app.dependency_overrides[get_db] = _override_db
     try:
         # Disable real DB side-effects from app lifespan
@@ -58,7 +60,9 @@ def test_create_report_ok(monkeypatch):
 
             return Obj()
 
-    monkeypatch.setattr(reports_module, "ReportsService", lambda db: FakeCreateService())
+    monkeypatch.setattr(
+        reports_module, "ReportsService", lambda db: FakeCreateService()
+    )
     app.dependency_overrides[get_db] = _override_db
     try:
         monkeypatch.setattr(database, "connect", lambda: None)
@@ -95,7 +99,9 @@ def test_update_report_ok(monkeypatch):
 
             return Obj()
 
-    monkeypatch.setattr(reports_module, "ReportsService", lambda db: FakeUpdateService())
+    monkeypatch.setattr(
+        reports_module, "ReportsService", lambda db: FakeUpdateService()
+    )
     app.dependency_overrides[get_db] = _override_db
     try:
         monkeypatch.setattr(database, "connect", lambda: None)
@@ -147,7 +153,9 @@ def test_delete_report_ok_and_not_found(monkeypatch):
                 raise DeleteError("not found")
             return None
 
-    monkeypatch.setattr(reports_module, "ReportsService", lambda db: FakeDeleteService())
+    monkeypatch.setattr(
+        reports_module, "ReportsService", lambda db: FakeDeleteService()
+    )
     app.dependency_overrides[get_db] = _override_db
     try:
         monkeypatch.setattr(database, "connect", lambda: None)
@@ -158,7 +166,10 @@ def test_delete_report_ok_and_not_found(monkeypatch):
         # OK case
         r_ok = client.delete(f"/api/v1/reports/{report_id_ok}")
         assert r_ok.status_code == 200
-        assert r_ok.json().get("data", {}).get("attributes", {}).get("message") == "Report deleted"
+        assert (
+            r_ok.json().get("data", {}).get("attributes", {}).get("message")
+            == "Report deleted"
+        )
 
         # Not found case
         r_nf = client.delete(f"/api/v1/reports/{report_id_missing}")
@@ -180,7 +191,9 @@ def test_reports_datetime_fields_are_iso(monkeypatch):
 
             return [Obj()]
 
-    monkeypatch.setattr(reports_module, "ReportsService", lambda db: FakeReportsServiceISO())
+    monkeypatch.setattr(
+        reports_module, "ReportsService", lambda db: FakeReportsServiceISO()
+    )
     app.dependency_overrides[get_db] = _override_db
     try:
         monkeypatch.setattr(database, "connect", lambda: None)
@@ -194,5 +207,3 @@ def test_reports_datetime_fields_are_iso(monkeypatch):
         assert isinstance(attrs["created_at"], str) and "T" in attrs["created_at"]
     finally:
         app.dependency_overrides.clear()
-
-

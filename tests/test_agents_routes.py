@@ -1,11 +1,11 @@
+import uuid
+from datetime import datetime
+
 from fastapi.testclient import TestClient
 
-from app.main import app
 import app.api.v1.agents as agents_module
-from app.core.database import get_db
-from app.core.database import database
-from datetime import datetime
-import uuid
+from app.core.database import database, get_db
+from app.main import app
 from app.schemas.agents import PlatformType
 
 
@@ -49,7 +49,6 @@ def test_get_agents_ok(monkeypatch):
         assert first.get("attributes", {}).get("name") == "agent-1"
     finally:
         app.dependency_overrides.clear()
-
 
 
 def test_create_agent_ok(monkeypatch):
@@ -170,7 +169,10 @@ def test_delete_agent_ok_and_not_found(monkeypatch):
         # OK case
         r_ok = client.delete(f"/api/v1/agents/{agent_id_ok}")
         assert r_ok.status_code == 200
-        assert r_ok.json().get("data", {}).get("attributes", {}).get("message") == "Agent deleted"
+        assert (
+            r_ok.json().get("data", {}).get("attributes", {}).get("message")
+            == "Agent deleted"
+        )
 
         # Not found case
         r_nf = client.delete(f"/api/v1/agents/{agent_id_missing}")
@@ -197,7 +199,9 @@ def test_agents_datetime_fields_are_iso(monkeypatch):
 
             return [Obj()]
 
-    monkeypatch.setattr(agents_module, "AgentsService", lambda db: FakeAgentsServiceISO())
+    monkeypatch.setattr(
+        agents_module, "AgentsService", lambda db: FakeAgentsServiceISO()
+    )
     app.dependency_overrides[get_db] = _override_db
     try:
         monkeypatch.setattr(database, "connect", lambda: None)
@@ -214,4 +218,3 @@ def test_agents_datetime_fields_are_iso(monkeypatch):
             assert isinstance(attrs["last_seen_at"], str)
     finally:
         app.dependency_overrides.clear()
-

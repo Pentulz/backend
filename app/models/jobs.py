@@ -3,11 +3,11 @@ import uuid
 from typing import List, Optional
 
 from sqlalchemy import (
+    Boolean,
     DateTime,
     ForeignKeyConstraint,
     Index,
     PrimaryKeyConstraint,
-    Boolean,
     Text,
     Uuid,
     text,

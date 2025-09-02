@@ -7,7 +7,9 @@ class BaseParser(ABC):
     """Base class for tool output parsers"""
 
     @abstractmethod
-    def parse_single_result(self, raw_output: str, command_used: str, agent_id: str = None) -> Dict:
+    def parse_single_result(
+        self, raw_output: str, command_used: str, agent_id: str = None
+    ) -> Dict:
         """
         Parse single tool output to standard format
         Must return: {

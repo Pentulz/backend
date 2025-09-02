@@ -18,3 +18,7 @@
 | `tests/test_report_parsers.py` | Validates parsing of tool outputs (e.g., Nmap, Tshark, FFUF) into normalized JSON. | Ensure parsers produce consistent, consumable structures for reporting/analysis. |
 | `tests/test_job_creation.py` | Exercises job creation and related flows around command building/validation. | Prevent invalid job payloads and command assembly regressions. |
 | `tests/test_command_validation.py` | Validates tool command templates, arguments, and allowed command generation/validation. | Protect against unsafe or malformed command executions. |
+
+---
+
+Built with ❤️ by Pentulz team. If you need help or find an issue, please open an issue in the repository.
