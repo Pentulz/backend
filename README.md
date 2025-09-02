@@ -65,6 +65,7 @@ Important links:
 - API routes: [02_API_ROUTES.md](./docs/02_API_ROUTES.md)
 - Adding a new tool: [03_ADDING_NEW_TOOL.md](./docs/03_ADDING_NEW_TOOL.md)
 - Deployment guide: [04_DEPLOYMENT.md](./docs/04_DEPLOYMENT.md)
+- List of tests: [05_LIST_OF_TESTS.md](./docs/05_LIST_OF_TESTS.md)
 
 ## Database UML
 
