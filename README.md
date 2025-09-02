@@ -36,7 +36,7 @@
 
 ## Pentulz
 
-Pentulz is a penetration-testing orchestration backend built with FastAPI. It manages scan jobs, agents, and parsing of tool outputs (e.g., Nmap, FFUF, Tshark) into a unified data model.
+Pentulz Backend is a penetration-testing orchestration API built with FastAPI. It manages scan jobs, agents, and parsing of tool outputs (e.g., Nmap, FFUF, Tshark) into a unified data model. It is the backbone of the communication between the Pentulz Frontend and the Pentulz Agent.
 
 Important links: 
 
