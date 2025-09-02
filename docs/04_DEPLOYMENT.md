@@ -1,5 +1,9 @@
 # Pentulz Backend - Deployment Guide
 
+> **Description**: CI/CD workflows, image publishing, and deployment instructions.
+
+**Maintainer**: Pentulz Team · **Last updated**: 2025-09-02
+
 ## 1. Overview
 
 This project uses **GitHub Actions** and **GitHub Container Registry (GHCR)** for deployment.  
@@ -109,3 +113,7 @@ poetry export --only main --without-hashes -f requirements.txt -o requirements.t
 ```
 
 This keeps local development powerful with Poetry, while production images stay lightweight and fast.
+
+---
+
+Built with ❤️ by the Pentulz team. If you need help or find an issue, please open an issue in the repository.
