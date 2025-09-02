@@ -154,7 +154,8 @@ class ToolManager:
                 if placeholder_name in custom_args:
                     command_args.append(
                         arg.replace(
-                            f"{{{placeholder_name}}}", custom_args[placeholder_name]
+                            f"{{{placeholder_name}}}",
+                            str(custom_args[placeholder_name]),
                         )
                     )
                 else:

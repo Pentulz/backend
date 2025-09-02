@@ -29,7 +29,7 @@ class FFufTool(BaseTool):
     @property
     def export_arguments(self) -> List[str]:
         """Always export JSON to stdout"""
-        return ["-of", "json", "-o", "-"]
+        return ["-s", "-noninteractive", "-json"]
 
     @property
     def command_templates(self) -> List[CommandTemplate]:
