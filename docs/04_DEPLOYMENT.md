@@ -20,6 +20,10 @@ Images are built automatically and pushed to `ghcr.io/pentulz/pentulz-backend`.
   - `ghcr.io/pentulz/pentulz-backend:v1.0.0`
   - `ghcr.io/pentulz/pentulz-backend:latest`
 
+Here is an illustration of the workflows:
+
+![Workflows](./assets/workflows.png)
+
 ## 3. How to Release
 
 1. Make sure all tests/lint checks pass on your branch.
