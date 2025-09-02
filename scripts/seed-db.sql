@@ -281,4 +281,71 @@ BEGIN
 END
 $$;
 
+-- Insert sample reports and link them to jobs
+INSERT INTO reports (id, name, description, results)
+VALUES (
+    '770e8400-e29b-41d4-a716-446655440001',
+    'Comprehensive Security Assessment - Q4 2024',
+    'Quarterly security assessment covering network infrastructure, web applications, and database systems.',
+    '{
+      "metadata": {
+        "report_id": "770e8400-e29b-41d4-a716-446655440001",
+        "name": "Comprehensive Security Assessment - Q4 2024",
+        "created_at": "2025-01-01T00:00:00",
+        "jobs_ids": [
+          "660e8400-e29b-41d4-a716-446655440001",
+          "660e8400-e29b-41d4-a716-446655440003",
+          "660e8400-e29b-41d4-a716-446655440004"
+        ],
+        "total_jobs": 3,
+        "total_findings": 0
+      },
+      "summary": {
+        "severity_distribution": {"critical":0, "high":0, "medium":0, "low":0, "info":0},
+        "total_findings": 0,
+        "tools_used": []
+      },
+      "findings_by_tool": {},
+      "all_findings": []
+    }'::jsonb
+);
+
+-- Associations for Report 1
+INSERT INTO reports_jobs (job_id, report_id) VALUES
+('660e8400-e29b-41d4-a716-446655440001','770e8400-e29b-41d4-a716-446655440001'),
+('660e8400-e29b-41d4-a716-446655440003','770e8400-e29b-41d4-a716-446655440001'),
+('660e8400-e29b-41d4-a716-446655440004','770e8400-e29b-41d4-a716-446655440001');
+
+INSERT INTO reports (id, name, description, results)
+VALUES (
+    '770e8400-e29b-41d4-a716-446655440002',
+    'OS and Service Exposure Overview',
+    'Overview of exposed services and OS detection across selected hosts.',
+    '{
+      "metadata": {
+        "report_id": "770e8400-e29b-41d4-a716-446655440002",
+        "name": "OS and Service Exposure Overview",
+        "created_at": "2025-01-02T00:00:00",
+        "jobs_ids": [
+          "660e8400-e29b-41d4-a716-446655440001",
+          "660e8400-e29b-41d4-a716-446655440005"
+        ],
+        "total_jobs": 2,
+        "total_findings": 0
+      },
+      "summary": {
+        "severity_distribution": {"critical":0, "high":0, "medium":0, "low":0, "info":0},
+        "total_findings": 0,
+        "tools_used": []
+      },
+      "findings_by_tool": {},
+      "all_findings": []
+    }'::jsonb
+);
+
+-- Associations for Report 2
+INSERT INTO reports_jobs (job_id, report_id) VALUES
+('660e8400-e29b-41d4-a716-446655440001','770e8400-e29b-41d4-a716-446655440002'),
+('660e8400-e29b-41d4-a716-446655440005','770e8400-e29b-41d4-a716-446655440002');
+
 COMMIT;

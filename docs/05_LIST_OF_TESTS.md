@@ -6,6 +6,9 @@
 
 ## Tests
 
+>[!NOTE]
+> **56 tests in total**
+
 | Test name | Description | Reason |
 | --- | --- | --- |
 | `tests/test_static_routes.py` | Verifies root route metadata, `/api/v1/health` status, and `/api/v1/tools` JSON:API shape (type/id/attributes/variants). | Ensure basic availability and stable public contract for static/system endpoints. |

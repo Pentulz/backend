@@ -94,6 +94,9 @@ class ReportsService:
         # Get jobs by IDs
         jobs = await self._get_jobs_by_ids(job_ids)
 
+        # Ensure JSON-serializable job ids for results metadata
+        job_ids_as_strings = [str(j) for j in job_ids]
+
         findings_by_tool = {}
         all_findings = []
 
@@ -158,6 +161,7 @@ class ReportsService:
                 "report_id": report_id,
                 "name": report_name,
                 "created_at": datetime.now().isoformat(),
+                "jobs_ids": job_ids_as_strings,
                 "total_jobs": total_jobs,
                 "total_findings": total_findings,
             },
