@@ -104,12 +104,14 @@ class JobsService:
 
     async def update_job(self, job_id: str, job_update: JobUpdate) -> Jobs:
         job = await self.get_job_by_id(job_id)
-        
+
         if not job:
             raise UpdateError("Job not found")
 
         # If job is completed or started, it cannot be updated
-        if job.completed_at is not None or (job.started_at is not None and job_update.action is not None):
+        if job.completed_at is not None or (
+            job.started_at is not None and job_update.action is not None
+        ):
             raise UpdateError("Job is completed or started. Action cannot be updated")
 
         # Validate action if it's being updated
@@ -139,7 +141,6 @@ class JobsService:
             job.results = job_update.results
         if job_update.success is not None:
             job.success = job_update.success
-
 
         try:
             self.db.add(job)

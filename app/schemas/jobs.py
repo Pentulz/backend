@@ -10,7 +10,8 @@ class JobAction(BaseModel):
 
     cmd: str = Field(..., description="Tool command (e.g., 'tshark', 'nmap', 'ffuf')")
     variant: str = Field(
-        ..., description="Template ID (e.g., 'live_capture_duration_only', 'tcp_connect_scan', 'directory_fuzzing')"
+        ...,
+        description="Template ID (e.g., 'live_capture_duration_only', 'tcp_connect_scan', 'directory_fuzzing')",
     )
     args: Dict[str, Any] = Field(..., description="Custom arguments for the template")
 
@@ -38,11 +39,10 @@ class JobActionResponse(BaseModel):
 
     cmd: str = Field(..., description="Tool command (e.g., 'tshark', 'nmap', 'ffuf')")
     variant: str = Field(
-        ..., description="Template ID (e.g., 'live_capture_duration_only', 'tcp_connect_scan', 'directory_fuzzing')"
+        ...,
+        description="Template ID (e.g., 'live_capture_duration_only', 'tcp_connect_scan', 'directory_fuzzing')",
     )
-    args: list[str] = Field(
-        ..., description="Command arguments as list of strings"
-    )
+    args: list[str] = Field(..., description="Command arguments as list of strings")
 
 
 # Request models
@@ -59,6 +59,7 @@ class Job(BaseModel):
     created_at: datetime
     results: Optional[str] = None
     success: Optional[bool] = None
+
 
 class JobCreate(BaseModel):
     name: str = Field(..., min_length=1, description="Job name")
@@ -88,7 +89,7 @@ class JobUpdate(BaseModel):
     completed_at: Optional[datetime] = None
     results: Optional[str] = None
     success: Optional[bool] = None
-    
+
     @validator("name")
     def validate_name(cls, v):
         if v is not None and not v.strip():
