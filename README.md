@@ -144,7 +144,7 @@ _When building the services for the first time, the database will be initialized
 Run tests and coverage:
 
 ```bash
-pytest -q --cov=app --cov-report=term-missing
+pytest -q --cov=app
 ```
 
 ## Linting
@@ -154,6 +154,8 @@ Run linting:
 ```bash
 pylint app tests
 ```
+
+_The linting is considered as failed if the score is below 8.0._
 
 ## Project Structure
 
