@@ -15,7 +15,7 @@ from app.schemas.agents import (
     AgentsListResponse,
     AgentUpdate,
 )
-from app.schemas.jobs import Job, JobsListResponse
+from app.schemas.jobs import Job, JobActionResponse, JobsListResponse
 from app.schemas.response_models import (
     DetailedBadRequestError,
     DetailedInternalServerError,
@@ -65,7 +65,11 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
                     Job(
                         id=job.id,
                         name=job.name,
-                        action=job.action,
+                        action=JobActionResponse(
+                            cmd=job.action["cmd"],
+                            variant=job.action["variant"],
+                            args=[str(v) for v in job.action["args"]],
+                        ),
                         agent_id=job.agent_id,
                         description=job.description,
                         results=job.results,
@@ -183,7 +187,12 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
             Job(
                 id=job.id,
                 name=job.name,
-                action=updated_action,
+                # action=updated_action,
+                action=JobActionResponse(
+                    cmd=updated_action["cmd"],
+                    variant=updated_action["variant"],
+                    args=[str(v) for v in updated_action["args"]],
+                ),
                 agent_id=job.agent_id,
                 description=job.description,
                 results=job.results,

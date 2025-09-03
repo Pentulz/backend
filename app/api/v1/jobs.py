@@ -8,7 +8,14 @@ from app.core.response import (
     create_success_response,
     create_success_response_list,
 )
-from app.schemas.jobs import Job, JobCreate, JobResponse, JobsListResponse, JobUpdate
+from app.schemas.jobs import (
+    Job,
+    JobActionResponse,
+    JobCreate,
+    JobResponse,
+    JobsListResponse,
+    JobUpdate,
+)
 from app.schemas.response_models import (
     DetailedBadRequestError,
     DetailedInternalServerError,
@@ -44,7 +51,11 @@ async def get_jobs(db: AsyncSession = Depends(get_db)):
         Job(
             id=job.id,
             name=job.name,
-            action=job.action,
+            action=JobActionResponse(
+                cmd=job.action["cmd"],
+                variant=job.action["variant"],
+                args=[str(v) for v in job.action["args"]],
+            ),
             agent_id=job.agent_id,
             description=job.description,
             results=job.results,
@@ -86,7 +97,11 @@ async def create_job(job: JobCreate, db: AsyncSession = Depends(get_db)):
         response = Job(
             id=job.id,
             name=job.name,
-            action=job.action,
+            action=JobActionResponse(
+                cmd=job.action["cmd"],
+                variant=job.action["variant"],
+                args=[str(v) for v in job.action["args"]],
+            ),
             agent_id=job.agent_id,
             description=job.description,
             results=job.results,
@@ -131,7 +146,11 @@ async def get_job(job_id: str, db: AsyncSession = Depends(get_db)):
     response = Job(
         id=job.id,
         name=job.name,
-        action=job.action,
+        action=JobActionResponse(
+            cmd=job.action["cmd"],
+            variant=job.action["variant"],
+            args=[str(v) for v in job.action["args"]],
+        ),
         agent_id=job.agent_id,
         description=job.description,
         results=job.results,
@@ -203,7 +222,11 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
         response = Job(
             id=job.id,
             name=job.name,
-            action=job.action,
+            action=JobActionResponse(
+                cmd=job.action["cmd"],
+                variant=job.action["variant"],
+                args=[str(v) for v in job.action["args"]],
+            ),
             agent_id=job.agent_id,
             description=job.description,
             results=job.results,
