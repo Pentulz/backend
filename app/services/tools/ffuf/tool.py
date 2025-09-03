@@ -1,3 +1,4 @@
+import re
 from typing import Any, Dict, List
 
 from app.services.tools.tool import ArgumentDefinition, BaseTool, CommandTemplate
@@ -128,6 +129,10 @@ class FFufTool(BaseTool):
 
         parser = FFufParser()
         return parser.parse_single_result(raw_output, command_used, agent_id)
+
+    def parse_version(self, raw_version: str) -> str:
+        match = re.search(r"ffuf version: (\d+\.\d+\.\d+)", raw_version)
+        return match.group(1) if match else super().parse_version(raw_version)
 
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate ffuf command arguments"""

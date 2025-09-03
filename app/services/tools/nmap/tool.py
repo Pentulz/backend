@@ -168,7 +168,7 @@ class NmapTool(BaseTool):
 
     def parse_version(self, raw_version: str) -> str:
         match = re.search(r"Nmap version (\d+\.\d+)", raw_version)
-        return match.group(1) if match else "unknown"
+        return match.group(1) if match else super().parse_version(raw_version)
 
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate nmap command arguments"""
