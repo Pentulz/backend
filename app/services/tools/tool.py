@@ -79,6 +79,10 @@ class BaseTool(ABC):
     ) -> Dict[str, Any]:
         """Parse tool output into structured data"""
 
+    def parse_version(self, raw_version: str) -> str:
+        """Parse tool version"""
+        return "idk man please implement"
+
     @abstractmethod
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate if command arguments match any template for this tool"""
