@@ -9,15 +9,21 @@ from pydantic import BaseModel, Field
 
 class Report(BaseModel):
     id: uuid.UUID
+    name: str
+    description: Optional[str] = None
     results: dict
     created_at: datetime
 
 
 class ReportCreate(BaseModel):
+    name: str = Field(..., description="Report name")
+    description: Optional[str] = Field(None, description="Report description")
     jobs_ids: List[uuid.UUID]
 
 
 class ReportUpdate(BaseModel):
+    name: Optional[str] = Field(None, description="Report name")
+    description: Optional[str] = Field(None, description="Report description")
     results: Optional[dict] = None
     jobs_ids: Optional[List[uuid.UUID]] = None
 
@@ -28,6 +34,8 @@ class ReportUpdate(BaseModel):
 class ReportAttributes(BaseModel):
     """Report attributes for response model"""
 
+    name: str = Field(..., description="Report name")
+    description: Optional[str] = Field(None, description="Report description")
     results: dict = Field(..., description="Report results")
     created_at: str = Field(..., description="When report was created (ISO format)")
     jobs_ids: List[str] | None = Field(

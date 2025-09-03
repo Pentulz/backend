@@ -8,7 +8,14 @@ from app.core.response import (
     create_success_response,
     create_success_response_list,
 )
-from app.schemas.jobs import Job, JobCreate, JobResponse, JobsListResponse, JobUpdate
+from app.schemas.jobs import (
+    Job,
+    JobActionResponse,
+    JobCreate,
+    JobResponse,
+    JobsListResponse,
+    JobUpdate,
+)
 from app.schemas.response_models import (
     DetailedBadRequestError,
     DetailedInternalServerError,
@@ -44,13 +51,18 @@ async def get_jobs(db: AsyncSession = Depends(get_db)):
         Job(
             id=job.id,
             name=job.name,
-            action=job.action,
+            action=JobActionResponse(
+                cmd=job.action["cmd"],
+                variant=job.action["variant"],
+                args=[str(v) for v in job.action["args"]],
+            ),
             agent_id=job.agent_id,
             description=job.description,
             results=job.results,
             started_at=job.started_at,
             completed_at=job.completed_at,
             created_at=job.created_at,
+            success=job.success,
         ).model_dump(mode="json")
         for job in jobs
     ]
@@ -85,7 +97,11 @@ async def create_job(job: JobCreate, db: AsyncSession = Depends(get_db)):
         response = Job(
             id=job.id,
             name=job.name,
-            action=job.action,
+            action=JobActionResponse(
+                cmd=job.action["cmd"],
+                variant=job.action["variant"],
+                args=[str(v) for v in job.action["args"]],
+            ),
             agent_id=job.agent_id,
             description=job.description,
             results=job.results,
@@ -130,13 +146,18 @@ async def get_job(job_id: str, db: AsyncSession = Depends(get_db)):
     response = Job(
         id=job.id,
         name=job.name,
-        action=job.action,
+        action=JobActionResponse(
+            cmd=job.action["cmd"],
+            variant=job.action["variant"],
+            args=[str(v) for v in job.action["args"]],
+        ),
         agent_id=job.agent_id,
         description=job.description,
         results=job.results,
         started_at=job.started_at,
         completed_at=job.completed_at,
         created_at=job.created_at,
+        success=job.success,
     )
 
     return create_success_response(
@@ -191,7 +212,6 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
     """
     Update a job
     """
-
     if not cast_uuid(job_id):
         return create_error_response("400", "Bad Request", "Invalid job id", 400)
 
@@ -202,17 +222,27 @@ async def update_job(job_id: str, job: JobUpdate, db: AsyncSession = Depends(get
         response = Job(
             id=job.id,
             name=job.name,
-            action=job.action,
+            action=JobActionResponse(
+                cmd=job.action["cmd"],
+                variant=job.action["variant"],
+                args=[str(v) for v in job.action["args"]],
+            ),
             agent_id=job.agent_id,
             description=job.description,
             results=job.results,
             started_at=job.started_at,
             completed_at=job.completed_at,
             created_at=job.created_at,
+            success=job.success,
         )
 
         return create_success_response(
             "jobs", str(job.id), response.model_dump(mode="json")
         )
-    except UpdateError:
-        return create_error_response("404", "Not Found", "Job not found", 404)
+    except UpdateError as e:
+        return create_error_response(
+            "422",
+            "Unprocessable Entity",
+            str(e),
+            422,
+        )

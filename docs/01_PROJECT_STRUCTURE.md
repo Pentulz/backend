@@ -1,6 +1,8 @@
 # Pentulz Backend - Project Structure
 
-This document explains the organization of the Pentulz backend codebase.
+> **Description**: Explanation of the repository layout and key modules
+
+**Maintainer**: Pentulz Team · **Last updated**: 2025-09-02
 
 ## Project Structure
 
@@ -16,8 +18,22 @@ backend/
 │   ├── schemas/
 │   ├── services/
 │   │   └── tools/
+│   │       └── <tool_name>/
+│   │           └── tool.py
+│   │           └── parser.py
+│   │           └── sample.*
+│   │       └── ...
+│   │       └── tool_manager.py
+│   │       └── tool_parser.py
+│   │       └── tool.py
+│   └── utils/
 │   └── main.py
 ├── docs/
+│   └── assets/
+│   └── ...
+├── scripts/
+│   └── init-db.sql
+│   └── seed-db.sql
 ├── tests/
 └── ... (other files)
 ```
@@ -68,10 +84,22 @@ Pluggable system for penetration testing tools:
 - Output parsers for normalizing scan results
 - Registry pattern for easy tool registration
 
+### `/app/utils/`
+
+Utility functions and helpers.
+
 ### `/docs/`
 
 Project documentation and guides.
 
+### `/scripts/`
+
+SQL scripts for database initialization and seeding.
+
 ### `/tests/`
 
 Test suite with unit and integration tests.
+
+---
+
+Built with ❤️ by the Pentulz team. If you need help or find an issue, please open an issue in the repository.

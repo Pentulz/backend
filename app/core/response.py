@@ -60,7 +60,7 @@ def create_success_response_list(
 ) -> JSONResponse:
     """Create a success response for multiple resources"""
 
-    def _serialize_value(value):
+    def serialize_value(value):
         """Convert datetime objects to ISO strings for JSON serialization"""
         if hasattr(value, "isoformat"):  # datetime objects
             return value.isoformat()
@@ -70,34 +70,38 @@ def create_success_response_list(
     for resource in resources:
         # Check if resource is already in JSON:API format
         if "type" in resource and "attributes" in resource:
-            # Resource is already formatted, just serialize it
-            serialized_resource = {
-                "type": resource["type"],
-                "attributes": {
-                    k: _serialize_value(v) for k, v in resource["attributes"].items()
-                },
+            # Resource is already formatted, serialize it
+            serialized_attributes = {
+                k: serialize_value(v) for k, v in resource["attributes"].items()
             }
 
+            # Inject id into attributes if it exists
+            if "id" in resource:
+                serialized_attributes["id"] = str(resource["id"])
+
+            serialized_resource = {
+                "type": resource["type"],
+                "attributes": serialized_attributes,
+            }
+
+            # Also add id outside of attributes if it exists
             if "id" in resource:
                 serialized_resource["id"] = str(resource["id"])
 
             data.append(serialized_resource)
         else:
             # Resource is raw data, format it
-            resource_id = str(resource.get("id", ""))
-
-            # Serialize each resource's attributes
-            serialized_attributes = {
-                k: _serialize_value(v) for k, v in resource.items() if k != "id"
-            }
+            # Serialize all attributes including id
+            serialized_attributes = {k: serialize_value(v) for k, v in resource.items()}
 
             res = {
                 "type": resource_type,
                 "attributes": serialized_attributes,
             }
 
-            if resource_id:
-                res.update(id=resource_id)
+            # Also add id outside of attributes if it exists
+            if "id" in resource:
+                res["id"] = str(resource["id"])
 
             data.append(res)
 

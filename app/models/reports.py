@@ -19,6 +19,8 @@ class Reports(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid, primary_key=True, server_default=text("gen_random_uuid()")
     )
+    name: Mapped[str] = mapped_column()
+    description: Mapped[Optional[str]] = mapped_column()
     results: Mapped[dict] = mapped_column(JSONB)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")

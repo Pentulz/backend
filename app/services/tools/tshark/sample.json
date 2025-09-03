@@ -1,0 +1,146 @@
+[
+    {
+      "_index": "packets-2025-08-31",
+      "_type": "doc",
+      "_score": null,
+      "_source": {
+        "layers": {
+          "frame": {
+            "frame.section_number": "1",
+            "frame.interface_id": "0",
+            "frame.interface_id_tree": {
+              "frame.interface_name": "eth0"
+            },
+            "frame.encap_type": "1",
+            "frame.time": "Aug 31, 2025 14:34:40.277082914 CEST",
+            "frame.time_utc": "Aug 31, 2025 12:34:40.277082914 UTC",
+            "frame.time_epoch": "1756643680.277082914",
+            "frame.offset_shift": "0.000000000",
+            "frame.time_delta": "0.000000000",
+            "frame.time_delta_displayed": "0.000000000",
+            "frame.time_relative": "0.000000000",
+            "frame.number": "1",
+            "frame.len": "42",
+            "frame.cap_len": "42",
+            "frame.marked": "0",
+            "frame.ignored": "0",
+            "frame.protocols": "eth:ethertype:arp"
+          },
+          "eth": {
+            "eth.dst": "00:15:5d:4f:40:ba",
+            "eth.dst_tree": {
+              "eth.dst_resolved": "Microsoft_4f:40:ba",
+              "eth.dst.oui": "5469",
+              "eth.dst.oui_resolved": "Microsoft Corporation",
+              "eth.addr": "00:15:5d:4f:40:ba",
+              "eth.addr_resolved": "Microsoft_4f:40:ba",
+              "eth.addr.oui": "5469",
+              "eth.addr.oui_resolved": "Microsoft Corporation",
+              "eth.dst.lg": "0",
+              "eth.lg": "0",
+              "eth.dst.ig": "0",
+              "eth.ig": "0"
+            },
+            "eth.src": "00:15:5d:1d:08:c9",
+            "eth.src_tree": {
+              "eth.src_resolved": "Microsoft_1d:08:c9",
+              "eth.src.oui": "5469",
+              "eth.src.oui_resolved": "Microsoft Corporation",
+              "eth.addr": "00:15:5d:1d:08:c9",
+              "eth.addr_resolved": "Microsoft_1d:08:c9",
+              "eth.addr.oui": "5469",
+              "eth.addr.oui_resolved": "Microsoft Corporation",
+              "eth.src.lg": "0",
+              "eth.lg": "0",
+              "eth.src.ig": "0",
+              "eth.ig": "0"
+            },
+            "eth.type": "0x0806"
+          },
+          "arp": {
+            "arp.hw.type": "1",
+            "arp.proto.type": "0x0800",
+            "arp.hw.size": "6",
+            "arp.proto.size": "4",
+            "arp.opcode": "1",
+            "arp.src.hw_mac": "00:15:5d:1d:08:c9",
+            "arp.src.proto_ipv4": "172.21.0.1",
+            "arp.dst.hw_mac": "00:15:5d:4f:40:ba",
+            "arp.dst.proto_ipv4": "172.21.1.225"
+          }
+        }
+      }
+    },
+    {
+      "_index": "packets-2025-08-31",
+      "_type": "doc",
+      "_score": null,
+      "_source": {
+        "layers": {
+          "frame": {
+            "frame.section_number": "1",
+            "frame.interface_id": "0",
+            "frame.interface_id_tree": {
+              "frame.interface_name": "eth0"
+            },
+            "frame.encap_type": "1",
+            "frame.time": "Aug 31, 2025 14:34:40.277096443 CEST",
+            "frame.time_utc": "Aug 31, 2025 12:34:40.277096443 UTC",
+            "frame.time_epoch": "1756643680.277096443",
+            "frame.offset_shift": "0.000000000",
+            "frame.time_delta": "0.000013529",
+            "frame.time_delta_displayed": "0.000013529",
+            "frame.time_relative": "0.000013529",
+            "frame.number": "2",
+            "frame.len": "42",
+            "frame.cap_len": "42",
+            "frame.marked": "0",
+            "frame.ignored": "0",
+            "frame.protocols": "eth:ethertype:arp"
+          },
+          "eth": {
+            "eth.dst": "00:15:5d:1d:08:c9",
+            "eth.dst_tree": {
+              "eth.dst_resolved": "Microsoft_1d:08:c9",
+              "eth.dst.oui": "5469",
+              "eth.dst.oui_resolved": "Microsoft Corporation",
+              "eth.addr": "00:15:5d:1d:08:c9",
+              "eth.addr_resolved": "Microsoft_1d:08:c9",
+              "eth.addr.oui": "5469",
+              "eth.addr.oui_resolved": "Microsoft Corporation",
+              "eth.dst.lg": "0",
+              "eth.lg": "0",
+              "eth.dst.ig": "0",
+              "eth.ig": "0"
+            },
+            "eth.src": "00:15:5d:4f:40:ba",
+            "eth.src_tree": {
+              "eth.src_resolved": "Microsoft_4f:40:ba",
+              "eth.src.oui": "5469",
+              "eth.src.oui_resolved": "Microsoft Corporation",
+              "eth.addr": "00:15:5d:4f:40:ba",
+              "eth.addr_resolved": "Microsoft_4f:40:ba",
+              "eth.addr.oui": "5469",
+              "eth.addr.oui_resolved": "Microsoft Corporation",
+              "eth.src.lg": "0",
+              "eth.lg": "0",
+              "eth.src.ig": "0",
+              "eth.ig": "0"
+            },
+            "eth.type": "0x0806"
+          },
+          "arp": {
+            "arp.hw.type": "1",
+            "arp.proto.type": "0x0800",
+            "arp.hw.size": "6",
+            "arp.proto.size": "4",
+            "arp.opcode": "2",
+            "arp.src.hw_mac": "00:15:5d:4f:40:ba",
+            "arp.src.proto_ipv4": "172.21.1.225",
+            "arp.dst.hw_mac": "00:15:5d:1d:08:c9",
+            "arp.dst.proto_ipv4": "172.21.0.1"
+          }
+        }
+      }
+    }
+  ]

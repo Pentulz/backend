@@ -295,7 +295,7 @@ def test_export_arguments_are_added():
     assert is_valid is True
     assert complete_cmd[0] == "ffuf"
     # FFuf has 4 export arguments: ['-of', 'json', '-o', '-']
-    assert complete_cmd[-4:] == ["-of", "json", "-o", "-"]
+    assert complete_cmd[-4:] == ["-o", "/dev/stdout", "-of", "json"]
 
     # Test Tshark
     tshark = TsharkTool()

@@ -32,7 +32,7 @@ class Agent(BaseModel):
     platform: PlatformType | None
     available_tools: list[Tool] | None
     token: str
-    last_seen_at: datetime
+    last_seen_at: datetime | None
     created_at: datetime
     jobs: list[Job] = []
 
@@ -43,13 +43,13 @@ class AgentCreate(BaseModel):
 
 
 class AgentUpdate(BaseModel):
-    name: str
-    hostname: str
-    description: str
-    platform: PlatformType
-    available_tools: list[Tool] | None
-    token: str
-    last_seen_at: datetime
+    name: str | None = None
+    hostname: str | None = None
+    description: str | None = None
+    platform: PlatformType | None = None
+    available_tools: list[Tool] | None = None
+    token: str | None = None
+    last_seen_at: datetime | None = None
 
 
 # Response models

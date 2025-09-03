@@ -154,7 +154,8 @@ class ToolManager:
                 if placeholder_name in custom_args:
                     command_args.append(
                         arg.replace(
-                            f"{{{placeholder_name}}}", custom_args[placeholder_name]
+                            f"{{{placeholder_name}}}",
+                            str(custom_args[placeholder_name]),
                         )
                     )
                 else:
@@ -189,13 +190,13 @@ class ToolManager:
         return tool.validate_command(command_args)
 
     def parse_results(
-        self, tool_name: str, raw_output: str, command_used: str
+        self, tool_name: str, raw_output: str, command_used: str, agent_id: str = None
     ) -> Optional[Dict[str, Any]]:
         """Parse tool results"""
         tool = self.tools.get(tool_name)
         if not tool:
             return None
-        return tool.parse_results(raw_output, command_used)
+        return tool.parse_results(raw_output, command_used, agent_id)
 
     def get_tool(self, tool_name: str) -> BaseTool:
         """Get tool by name"""

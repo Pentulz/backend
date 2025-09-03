@@ -1,6 +1,8 @@
-# API Routes Documentation
+# Pentulz Backend - API Routes
 
-This document describes the REST API endpoints available in the Pentulz backend.
+> **Description**: Overview of all REST API endpoints exposed by the Pentulz backend
+
+**Maintainer**: Pentulz Team · **Last updated**: 2025-09-02
 
 ## Base URL
 
@@ -37,7 +39,7 @@ All API endpoints are prefixed with `/api/v1/` (configurable in the [config.py](
 
 **GET** `/agents/{agent_id}/jobs` - Get jobs for specific agent
 - Parameters: `agent_id` (UUID)
-- Query params: `completed` (boolean) - filter by completion status
+- Query params: `completed` (boolean) - filter by completion status (default: false)
 - Returns: List of jobs for the agent
 
 ### Jobs
@@ -93,10 +95,14 @@ All API endpoints are prefixed with `/api/v1/` (configurable in the [config.py](
 
 All endpoints return responses in a consistent format using the standardized response schemas defined in `app/schemas/response.py`.
 
-You can see examples of the responses in [API_RESPONSES.md](./API_RESPONSES.md)
+You can also see the response format using OpenAPI documentation at `/docs` and `/redoc`, after starting the server (`docker compose --profile dev up`).
 
 ## Error Handling
 
 - **400** - Bad Request (invalid input)
 - **404** - Not Found (resource not found)
 - **500** - Internal Server Error
+
+---
+
+Built with ❤️ by the Pentulz team. If you need help or find an issue, please open an issue in the repository.

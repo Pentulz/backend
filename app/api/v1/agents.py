@@ -15,7 +15,7 @@ from app.schemas.agents import (
     AgentsListResponse,
     AgentUpdate,
 )
-from app.schemas.jobs import Job, JobsListResponse
+from app.schemas.jobs import Job, JobActionResponse, JobsListResponse
 from app.schemas.response_models import (
     DetailedBadRequestError,
     DetailedInternalServerError,
@@ -23,6 +23,7 @@ from app.schemas.response_models import (
     MessageResponse,
 )
 from app.services.agents import AgentsService
+from app.services.tools.tool_manager import ToolManager
 from app.utils.uuid import cast_uuid
 
 router = APIRouter()
@@ -64,7 +65,11 @@ async def get_agents(db: AsyncSession = Depends(get_db)):
                     Job(
                         id=job.id,
                         name=job.name,
-                        action=job.action,
+                        action=JobActionResponse(
+                            cmd=job.action["cmd"],
+                            variant=job.action["variant"],
+                            args=[str(v) for v in job.action["args"]],
+                        ),
                         agent_id=job.agent_id,
                         description=job.description,
                         results=job.results,
@@ -156,6 +161,48 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
     if not agent:
         return create_error_response("404", "Not Found", "Agent not found", 404)
 
+    tool_manager = ToolManager()
+    jobs = []
+
+    for job in agent.jobs:
+        action = job.action or {}
+        cmd = action.get("cmd")
+        args = action.get("args", [])
+
+        if cmd:
+            tool = tool_manager.get_tool(cmd)
+            if tool:
+                export_args = tool.export_arguments or []
+                if export_args:
+                    needs_append = True
+                    if len(args) >= len(export_args):
+                        if args[-len(export_args) :] == export_args:
+                            needs_append = False
+                    if needs_append:
+                        args = list(args) + list(export_args)
+
+        updated_action = {**action, "args": args}
+
+        jobs.append(
+            Job(
+                id=job.id,
+                name=job.name,
+                # action=updated_action,
+                action=JobActionResponse(
+                    cmd=updated_action["cmd"],
+                    variant=updated_action["variant"],
+                    args=[str(v) for v in updated_action["args"]],
+                ),
+                agent_id=job.agent_id,
+                description=job.description,
+                results=job.results,
+                started_at=job.started_at,
+                completed_at=job.completed_at,
+                created_at=job.created_at,
+                success=job.success,
+            ).model_dump(mode="json")
+        )
+
     response = Agent(
         id=agent.id,
         name=agent.name,
@@ -166,20 +213,7 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
         token=agent.token,
         last_seen_at=agent.last_seen_at,
         created_at=agent.created_at,
-        jobs=[
-            Job(
-                id=j.id,
-                name=j.name,
-                action=j.action,
-                agent_id=j.agent_id,
-                description=j.description,
-                results=j.results,
-                started_at=j.started_at if j.started_at else None,
-                completed_at=j.completed_at if j.completed_at else None,
-                created_at=j.created_at,
-            )
-            for j in (agent.jobs or [])
-        ],
+        jobs=jobs,
     )
 
     return create_success_response(
@@ -288,19 +322,41 @@ async def get_agent_jobs(
     if not jobs:
         return create_success_response_list("jobs", [])
 
-    response = [
-        Job(
-            id=job.id,
-            name=job.name,
-            action=job.action,
-            agent_id=job.agent_id,
-            description=job.description,
-            results=job.results,
-            started_at=job.started_at,
-            completed_at=job.completed_at,
-            created_at=job.created_at,
-        ).model_dump(mode="json")
-        for job in jobs
-    ]
+    tool_manager = ToolManager()
+
+    response = []
+    for job in jobs:
+        action = job.action or {}
+        cmd = action.get("cmd")
+        args = action.get("args", [])
+
+        if cmd:
+            tool = tool_manager.get_tool(cmd)
+            if tool:
+                export_args = tool.export_arguments or []
+                if export_args:
+                    needs_append = True
+                    if len(args) >= len(export_args):
+                        if args[-len(export_args) :] == export_args:
+                            needs_append = False
+                    if needs_append:
+                        args = list(args) + list(export_args)
+
+        updated_action = {**action, "args": args}
+
+        response.append(
+            Job(
+                id=job.id,
+                name=job.name,
+                action=updated_action,
+                agent_id=job.agent_id,
+                description=job.description,
+                results=job.results,
+                started_at=job.started_at,
+                completed_at=job.completed_at,
+                created_at=job.created_at,
+                success=job.success,
+            ).model_dump(mode="json")
+        )
 
     return create_success_response_list("jobs", response)
