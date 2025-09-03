@@ -2,6 +2,7 @@ import uuid
 from datetime import timezone
 from typing import List, Optional
 
+from app.services.tools.tool_manager import ToolManager
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -92,9 +93,14 @@ class AgentsService:
         if agent_update.platform is not None:
             agent.platform = agent_update.platform
         if agent_update.available_tools is not None:
-            agent.available_tools = [
-                tool.model_dump() for tool in agent_update.available_tools
-            ]
+            available_tools = []
+            tool_manager = ToolManager()
+            for tool in agent_update.available_tools:
+                specific_tool = tool_manager.get_tool(tool.cmd)
+                if tool.version:
+                    tool.version = specific_tool.parse_version(tool.version)
+                available_tools.append(tool.model_dump())
+            agent.available_tools = available_tools
 
         if agent_update.token is not None:
             agent.token = agent_update.token

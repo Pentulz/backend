@@ -166,6 +166,10 @@ class TsharkTool(BaseTool):
         parser = TsharkParser()
         return parser.parse_single_result(raw_output, command_used, agent_id)
 
+    def parse_version(self, raw_version: str) -> str:
+        match = re.search(r"TShark \(Wireshark\) (\d+\.\d+\.\d+)", raw_version)
+        return match.group(1) if match else super().parse_version(raw_version)
+
     def validate_command(self, command_args: List[str]) -> bool:
         """Validate tshark command arguments"""
         return self._validate_command_common(command_args, "tshark")
