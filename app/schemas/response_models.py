@@ -20,7 +20,7 @@ class MessageResponse(BaseModel):
 class ToolsResponse(BaseModel):
     """Response model for tools endpoint"""
 
-    data: List[Dict[str, Any]] = Field(..., description="List of available tools")
+    data: list[dict[str, Any]] = Field(..., description="List of available tools")
 
 
 class ErrorResponse(BaseModel):
@@ -59,13 +59,13 @@ class UnauthorizedError(BaseModel):
 class ForbiddenError(BaseModel):
     """403 Forbidden error response"""
 
-    errors: List[Dict[str, str]] = Field(..., description="List of permission errors")
+    errors: list[dict[str, str]] = Field(..., description="List of permission errors")
 
 
 class ConflictError(BaseModel):
     """409 Conflict error response"""
 
-    errors: List[Dict[str, str]] = Field(..., description="List of conflict errors")
+    errors: list[dict[str, str]] = Field(..., description="List of conflict errors")
 
 
 # Detailed error structure models
@@ -80,32 +80,32 @@ class ErrorDetail(BaseModel):
 class DetailedErrorResponse(BaseModel):
     """Detailed error response with proper JSON:API structure"""
 
-    errors: List[ErrorDetail] = Field(..., description="List of detailed errors")
+    errors: list[ErrorDetail] = Field(..., description="List of detailed errors")
 
 
 # Specific detailed error responses
 class DetailedBadRequestError(BaseModel):
     """400 Bad Request error response with detailed structure"""
 
-    errors: List[ErrorDetail] = Field(..., description="List of validation errors")
+    errors: list[ErrorDetail] = Field(..., description="List of validation errors")
 
 
 class DetailedNotFoundError(BaseModel):
     """404 Not Found error response with detailed structure"""
 
-    errors: List[ErrorDetail] = Field(..., description="List of not found errors")
+    errors: list[ErrorDetail] = Field(..., description="List of not found errors")
 
 
 class DetailedInternalServerError(BaseModel):
     """500 Internal Server Error response with detailed structure"""
 
-    errors: List[ErrorDetail] = Field(..., description="List of server errors")
+    errors: list[ErrorDetail] = Field(..., description="List of server errors")
 
 
 class DetailedUnauthorizedError(BaseModel):
     """401 Unauthorized error response with detailed structure"""
 
-    errors: List[ErrorDetail] = Field(..., description="List of authentication errors")
+    errors: list[ErrorDetail] = Field(..., description="List of authentication errors")
 
 
 class DetailedForbiddenError(BaseModel):
