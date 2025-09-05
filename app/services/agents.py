@@ -117,7 +117,41 @@ class AgentsService:
             self.db.add(agent)
             await self.db.commit()
         except IntegrityError as e:
-            raise UpdateError(f"Failed to update agent: {e}") from e
+            await self.db.rollback()
+
+            orig = e.orig
+            if orig:
+                error_msg = orig.args[0] if orig.args else "Unknown database error"
+
+                # Clean the <class '...'> prefix from the error message
+                if error_msg.startswith("<class '") and "'>: " in error_msg:
+                    error_msg = error_msg.split("'>: ", 1)[1]
+
+                detail = getattr(orig, "detail", None)
+                constraint = getattr(orig, "constraint_name", None)
+
+                # Clean up the error message for better readability
+                if (
+                    "duplicate key value violates unique constraint" in error_msg
+                    and detail
+                ):
+                    # Extract constraint name from quotes if present
+                    constraint_name = (
+                        error_msg.split('"')[1] if '"' in error_msg else "unknown"
+                    )
+                    # Extract the key info from detail
+                    key_info = (
+                        detail.replace("Key ", "").replace("(", "").replace(")", "")
+                    )
+                    msg = f"Failed to update agent: {key_info} already exists (constraint: {constraint_name})"
+                else:
+                    msg = f"Failed to update agent: {error_msg}"
+                    if detail:
+                        msg += f" - {detail}"
+            else:
+                msg = f"Failed to update agent: {str(e)}"
+
+            raise UpdateError(msg) from e
 
         return agent
 
