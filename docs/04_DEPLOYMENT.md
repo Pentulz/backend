@@ -7,7 +7,7 @@
 ## 1. Overview
 
 This project uses **GitHub Actions** and **GitHub Container Registry (GHCR)** for deployment.  
-Images are built automatically and pushed to `ghcr.io/pentulz/pentulz-backend`.
+Images are built automatically and pushed to `ghcr.io/pentulz/backend`.
 
 ## 2. Workflows
 
@@ -17,8 +17,8 @@ Images are built automatically and pushed to `ghcr.io/pentulz/pentulz-backend`.
 
 - **CD Production (tags)**  
   When a Git tag is created (e.g. `v1.0.0`), a production image is pushed:
-  - `ghcr.io/pentulz/pentulz-backend:v1.0.0`
-  - `ghcr.io/pentulz/pentulz-backend:latest`
+  - `ghcr.io/pentulz/backend:v1.0.0`
+  - `ghcr.io/pentulz/backend:latest`
 
 Here is an illustration of the workflows:
 
@@ -35,11 +35,9 @@ Here is an illustration of the workflows:
    git push origin v1.0.0
    ```
 
-## 4. Run with Docker Compose
+## 4. Run with Docker Compose in development mode
 
 This repository provides a `docker-compose.yml` with two profiles:
-
-- **Development (`dev`)**
 
   ```bash
   docker compose --profile dev up --build
@@ -48,14 +46,7 @@ This repository provides a `docker-compose.yml` with two profiles:
   - Mounts local code (`.:/app`)
   - Enables `--reload` for fast development
 
-- **Production (`prod`)**
-
-  ```bash
-  docker compose --profile prod up -d
-  ```
-
-  - Runs the published image from GHCR
-  - Use environment variables from `.env`
+_For Production mode, see the official repository : [here](https://github.com/Pentulz/Pentulz)_
 
 ## 5. Environment Variables
 
@@ -83,7 +74,7 @@ If you want to deploy the production image using Docker Compose, you can use the
 ```yml
 services:
   api:
-    image: ghcr.io/pentulz/pentulz-backend:latest
+    image: ghcr.io/pentulz/backend:latest
     env_file:
       - .env
     ports:
@@ -94,7 +85,7 @@ services:
 Start the service with:
 
 ```bash
-docker compose --profile prod up -d
+docker compose up -d
 ```
 
 > For reproducible deployments, replace :latest with a specific version tag (e.g. :v1.0.1).
