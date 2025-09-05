@@ -38,18 +38,7 @@ from app.services.tools.tool_manager import ToolManager
 from app.utils.uuid import cast_uuid
 
 
-router = APIRouter(tags=["jobs"])
-
-
-@router.get("/stats")
-def get_stats(agent=Depends(verify_agent_token)):
-    return {"msg": f"Access granted for {agent.id}"}
-
-
-@router.post("/run")
-def run_job(agent=Depends(verify_agent_token)):
-    return {"msg": f"Job executed by {agent.hostname}"}
-
+router = APIRouter()
 
 @router.get(
     "/self",

@@ -3,7 +3,7 @@ from typing import Dict, Generic, List, TypeVar, Union
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# Type générique pour les données
+# Generic type for data
 T = TypeVar("T")
 
 # Documentation: https://jsonapi.org/examples/

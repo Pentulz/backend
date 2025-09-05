@@ -2,7 +2,7 @@
 
 > **Description**: Overview of all REST API endpoints exposed by the Pentulz backend
 
-**Maintainer**: Pentulz Team · **Last updated**: 2025-09-02
+**Maintainer**: Pentulz Team · **Last updated**: 2025-09-05
 
 ## Base URL
 
@@ -37,10 +37,6 @@ All API endpoints are prefixed with `/api/v1/` (configurable in the [config.py](
 - Parameters: `agent_id` (UUID)
 - Returns: Deletion confirmation
 
-**GET** `/agents/{agent_id}/jobs` - Get jobs for specific agent
-- Parameters: `agent_id` (UUID)
-- Query params: `completed` (boolean) - filter by completion status (default: false)
-- Returns: List of jobs for the agent
 
 ### Jobs
 
@@ -86,10 +82,31 @@ All API endpoints are prefixed with `/api/v1/` (configurable in the [config.py](
 - Parameters: `report_id` (UUID)
 - Returns: Deletion confirmation
 
+### Protected Agent Endpoints (only for agents, with token verification)
+
+**GET** `/protected/self` - Get current agent information
+- Headers: `Authorization: Bearer <agent_token>`
+- Returns: Current agent data
+
+**PATCH** `/protected/self` - Update current agent
+- Headers: `Authorization: Bearer <agent_token>`
+- Body: `AgentUpdate` schema
+- Returns: Updated agent data
+
+**GET** `/protected/jobs` - Get jobs for current agent
+- Headers: `Authorization: Bearer <agent_token>`
+- Returns: List of jobs for the authenticated agent
+
+**PATCH** `/protected/jobs/{job_id}` - Update a job (agent-protected)
+- Headers: `Authorization: Bearer <agent_token>`
+- Parameters: `job_id` (UUID)
+- Body: `JobUpdate` schema
+- Returns: Updated job data
+
 ### System Tools
 
 **GET** `/tools` - Get available penetration testing tools
-- Returns: List of supported tools
+- Returns: List of supported tools by Pentulz
 
 ## Response Format
 
@@ -97,10 +114,18 @@ All endpoints return responses in a consistent format using the standardized res
 
 You can also see the response format using OpenAPI documentation at `/docs` and `/redoc`, after starting the server (`docker compose --profile dev up`).
 
+## Authentication
+
+Some endpoints (protected ones) require agent authentication using a Bearer token in the Authorization header:
+- Format: `Authorization: Bearer <agent_token>`
+- These endpoints are marked as "Protected Agent Endpoints" above
+
 ## Error Handling
 
 - **400** - Bad Request (invalid input)
+- **401** - Unauthorized (invalid or missing token)
 - **404** - Not Found (resource not found)
+- **422** - Unprocessable Entity (validation error)
 - **500** - Internal Server Error
 
 ---
