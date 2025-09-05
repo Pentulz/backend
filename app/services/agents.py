@@ -54,7 +54,7 @@ class AgentsService:
         if await self.get_agent_by_name(agent.name):
             raise CreateError("Agent with this name already exists")
 
-        # Generate token
+        # Generate token for authentication
         token = str(uuid.uuid4())
 
         # Create agent

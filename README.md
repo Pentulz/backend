@@ -171,7 +171,7 @@ uvicorn app.main:app --reload
 The API will be available at `http://localhost:8000` with interactive docs at `/docs`.
 
 >[!IMPORTANT]
-> We advice to use the Docker Compose file to start the application.
+> We advise to use the Docker Compose file to start the application.
 
 ## Testing
 
