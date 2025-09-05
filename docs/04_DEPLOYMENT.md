@@ -52,7 +52,7 @@ docker compose --profile dev up --build
 ### Production Mode
 
 > [!NOTE]
-> Production deployment is handled in the [official Pentulz repository](https://github.com/Pentulz/Pentulz). This backend repository is for development and testing only.
+> Production deployment is handled in the [official Pentulz repository](https://github.com/Pentulz/Pentulz).
 
 
 ## 5. Environment Variables
