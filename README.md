@@ -36,28 +36,30 @@
 
 ## Introduction
 
-Pentulz Backend is a penetration-testing orchestration API built with FastAPI. It manages scan jobs, agents, and parsing of tool outputs (e.g., Nmap, FFUF, Tshark) into a unified data model. It is the backbone of the communication between the Pentulz Frontend and the Pentulz Agent.
+Pentulz Backend is a penetration-testing orchestration API built with FastAPI. It provides a modular system for managing security scan jobs, remote agents, and intelligent parsing of tool outputs (Nmap, FFUF, Tshark) into a unified, classified data model. 
+
 
 Important links: 
 
 - Official website: [https://pentulz.xyz](https://pentulz.xyz)
 - Official repository: [https://github.com/Pentulz/Pentulz](https://github.com/Pentulz/Pentulz)
-- Frontend repository: [https://github.com/Pentulz/Frontend](https://github.com/Pentulz/Pentulz-Frontend)
-- Agent repository: [https://github.com/Pentulz/Agent](https://github.com/Pentulz/Pentulz-Agent)
+- Frontend repository: [https://github.com/Pentulz/Frontend](https://github.com/Pentulz/frontend)
+- Agent repository: [https://github.com/Pentulz/Agent](https://github.com/Pentulz/agent)
 
 > [!NOTE]
 > This repository is part of the Pentulz project. To see the full project, please visit the [Pentulz repository](https://github.com/Pentulz/Pentulz).
 
 ## Features
 
-- Orchestrated job management with queued/running/completed states
-- Agent management
-- Tool execution model with pluggable parsers (Nmap, FFUF, Tshark)
-- PostgreSQL via SQLAlchemy 2.x (async)
-- Typed request/response models with Pydantic
-- Consistent API error handling
-- OpenAPI docs at `/docs` and `/redoc`
-- Tests with `pytest`
+- **Job Orchestration**: Queue-based job management with queued/running/completed states
+- **Agent Management**: Remote agent registration and communication
+- **Modular Tool System**: Pluggable parsers for security tools (Nmap, FFUF, Tshark)
+- **Intelligent Classification**: Automatic vulnerability severity classification (critical/high/medium/low/info)
+- **Unified Reporting**: Standardized findings format across all tools
+- **Async Database**: PostgreSQL via SQLAlchemy 2.x with async support
+- **Type Safety**: Typed request/response models with Pydantic
+- **API Documentation**: Interactive OpenAPI docs at `/docs` and `/redoc`
+- **Comprehensive Testing**: Full test suite with `pytest`
 
 ## Documentation
 
@@ -78,12 +80,11 @@ The current database schema is illustrated below. The source diagram is availabl
 
 ## Tech Stack
 
-- FastAPI, Starlette
+- FastAPI
 - SQLAlchemy 2.x, PostgreSQL, asyncpg
-- Pydantic, pydantic-settings
+- Pydantic
 - Alembic
 - Uvicorn
-- Pytest, httpx
 
 ## Getting Started
 
@@ -93,7 +94,24 @@ The current database schema is illustrated below. The source diagram is availabl
 - PostgreSQL 13+
 - Optional: Poetry (recommended) or pip + virtualenv
 
-### Configuration
+### Quick Start with Docker (Recommended)
+
+The easiest way to get started is with Docker Compose, which automatically handles database initialization:
+
+```bash
+docker compose --profile dev up --build
+```
+
+**What happens automatically:**
+- PostgreSQL database is created and started
+- Database schema is automatically initialized
+- Application connects to the database
+- API is available at `http://localhost:8000`
+- Interactive API docs at `http://localhost:8000/docs`
+
+### Manual Setup (Development)
+
+#### Configuration
 
 Environment variables are read via `pydantic-settings`. Common variables include:
 
@@ -103,7 +121,7 @@ Environment variables are read via `pydantic-settings`. Common variables include
 
 Create a `.env` in the project root if needed.
 
-### Installation
+#### Installation
 
 Using Poetry:
 
@@ -119,25 +137,80 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### Database
+#### Database Setup
 
-You can initialize and seed the database using the provided SQL scripts in `scripts/`.
+**Option 1: Automatic initialization (recommended)**
+The application will automatically create the database schema on first run if it doesn't exist, if you use the Docker Compose file.
+
+> [!IMPORTANT]
+> The seeding of the database is not done automatically, you need to do it manually.
+
+**Option 2: Manual initialization**
+You can manually initialize and seed the database using the provided SQL scripts:
 
 ```bash
-# Example with psql
+# Initialize database schema
 psql "$env:DATABASE_URL" -f scripts/init-db.sql
+
+# Seed with sample data (optional)
 psql "$env:DATABASE_URL" -f scripts/seed-db.sql
 ```
 
-### Docker
-
-To run with Docker Compose:
+#### Running the Application
 
 ```bash
-docker compose --profile dev up --build
+# With Poetry
+poetry run uvicorn app.main:app --reload
+
+# With pip
+uvicorn app.main:app --reload
 ```
 
-_When building the services for the first time, the database will be initialized and seeded with the provided SQL scripts._
+The API will be available at `http://localhost:8000` with interactive docs at `/docs`.
+
+## Production Deployment
+
+### Docker Compose (Production)
+
+For production deployment, use the production profile:
+
+```bash
+# Production deployment
+docker compose --profile prod up -d
+```
+
+**Production configuration:**
+- Uses production-optimized settings
+- Database persistence with volumes
+- Health checks and restart policies
+- Logging configuration
+- Security hardening
+
+### Environment Variables (Production)
+
+Update your `.env` file with production settings:
+
+```bash
+APP_NAME=Pentulz Backend
+APP_ENVIRONMENT=dev
+APP_DEBUG=true
+APP_CORS_ALLOW_ORIGINS='["http://localhost:3000","http://localhost"]'
+
+APP_DATABASE_HOST=database
+APP_DATABASE_PORT=5432
+APP_DATABASE_USER=postgres
+APP_DATABASE_PASSWORD=postgres
+APP_DATABASE_NAME=pentulz
+```
+
+### Production Considerations
+
+- **Database**: Use a managed PostgreSQL service (AWS RDS, Google Cloud SQL, etc.)
+- **Security**: Set strong `SECRET_KEY`, configure CORS properly, use HTTPS
+- **Monitoring**: Add logging, health checks, and monitoring tools
+- **Scaling**: Use load balancers and multiple worker processes
+- **Backups**: Implement regular database backups
+- **Updates**: Use rolling deployments for zero-downtime updates
 
 ## Testing
 
@@ -163,12 +236,13 @@ See [01_PROJECT_STRUCTURE.md](./docs/01_PROJECT_STRUCTURE.md) for details. At a 
 
 - `app/main.py`: FastAPI app, middleware, routers, error handlers
 - `app/api/v1/*`: API routers for system, health, jobs, reports, agents
-- `app/services/*`: Business logic, tool orchestration and parsers
+- `app/services/*`: Business logic, tool orchestration and intelligent parsers
+- `app/services/tools/*`: Modular tool system with BaseTool, ToolManager, and parsers
 - `app/models/*`: SQLAlchemy models and ORM base
-- `app/schemas/*`: Pydantic models
-- `app/core/*`: configuration, database, response helpers
-- `docs/*`: documentation and database UML
-- `tests/*`: unit and integration tests
+- `app/schemas/*`: Pydantic models for request/response validation
+- `app/core/*`: Configuration, database, response helpers
+- `docs/*`: Comprehensive documentation and database UML
+- `tests/*`: Unit and integration tests with coverage reporting
 
 ## Useful Links
 
