@@ -7,7 +7,7 @@
 ## 1. Overview
 
 This project uses **GitHub Actions** and **GitHub Container Registry (GHCR)** for deployment.  
-Images are built automatically and pushed to `ghcr.io/pentulz/pentulz-backend`.
+Images are built automatically and pushed to `ghcr.io/pentulz/backend`.
 
 ## 2. Workflows
 
@@ -17,8 +17,8 @@ Images are built automatically and pushed to `ghcr.io/pentulz/pentulz-backend`.
 
 - **CD Production (tags)**  
   When a Git tag is created (e.g. `v1.0.0`), a production image is pushed:
-  - `ghcr.io/pentulz/pentulz-backend:v1.0.0`
-  - `ghcr.io/pentulz/pentulz-backend:latest`
+  - `ghcr.io/pentulz/backend:v1.0.0`
+  - `ghcr.io/pentulzbackend:latest`
 
 Here is an illustration of the workflows:
 
@@ -83,7 +83,7 @@ If you want to deploy the production image using Docker Compose, you can use the
 ```yml
 services:
   api:
-    image: ghcr.io/pentulz/pentulz-backend:latest
+    image: ghcr.io/pentulz/backend:latest
     env_file:
       - .env
     ports:

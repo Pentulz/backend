@@ -187,7 +187,6 @@ async def get_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
             Job(
                 id=job.id,
                 name=job.name,
-                # action=updated_action,
                 action=JobActionResponse(
                     cmd=updated_action["cmd"],
                     variant=updated_action["variant"],
@@ -291,72 +290,3 @@ async def delete_agent(agent_id: str, db: AsyncSession = Depends(get_db)):
         )
     except DeleteError:
         return create_error_response("404", "Not Found", "Agent not found", 404)
-
-
-@router.get(
-    "/agents/{agent_id}/jobs",
-    response_model=JobsListResponse,
-    responses={
-        200: {"description": "Agent jobs retrieved successfully"},
-        400: {
-            "model": DetailedBadRequestError,
-            "description": "Bad request - invalid agent ID",
-        },
-    },
-)
-async def get_agent_jobs(
-    agent_id: str, completed: bool = False, db: AsyncSession = Depends(get_db)
-):
-    """
-    Get jobs for an agent if query params ?completed=false, return only not completed jobs
-    Example:
-    - GET http://localhost:8000/api/v1/agents/<agent_id>/jobs?completed=false
-    - GET http://localhost:8000/api/v1/agents/<agent_id>/jobs?completed=true
-    """
-    if not cast_uuid(agent_id):
-        return create_error_response("400", "Bad Request", "Invalid agent id", 400)
-
-    agent_service = AgentsService(db)
-    jobs = await agent_service.get_jobs_by_agent_id(agent_id, completed)
-
-    if not jobs:
-        return create_success_response_list("jobs", [])
-
-    tool_manager = ToolManager()
-
-    response = []
-    for job in jobs:
-        action = job.action or {}
-        cmd = action.get("cmd")
-        args = action.get("args", [])
-
-        if cmd:
-            tool = tool_manager.get_tool(cmd)
-            if tool:
-                export_args = tool.export_arguments or []
-                if export_args:
-                    needs_append = True
-                    if len(args) >= len(export_args):
-                        if args[-len(export_args) :] == export_args:
-                            needs_append = False
-                    if needs_append:
-                        args = list(args) + list(export_args)
-
-        updated_action = {**action, "args": args}
-
-        response.append(
-            Job(
-                id=job.id,
-                name=job.name,
-                action=updated_action,
-                agent_id=job.agent_id,
-                description=job.description,
-                results=job.results,
-                started_at=job.started_at,
-                completed_at=job.completed_at,
-                created_at=job.created_at,
-                success=job.success,
-            ).model_dump(mode="json")
-        )
-
-    return create_success_response_list("jobs", response)

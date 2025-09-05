@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import agents, health, jobs, reports, system
+from app.api.v1 import agents, health, jobs, reports, system, protected_agents
 from app.core.config import get_settings
 from app.core.database import database
 
@@ -66,11 +66,21 @@ app.add_middleware(
 )
 
 # Include routers
+# Publish /tools on both /api/v1 and /api/v1/protected prefixes (frontend and agent routes)
+app.include_router(
+    system.router, prefix=f"{settings.API_PREFIX}/protected", tags=["System"]
+)
 app.include_router(system.router, prefix=settings.API_PREFIX, tags=["System"])
 app.include_router(health.router, prefix=settings.API_PREFIX, tags=["Health"])
 app.include_router(jobs.router, prefix=settings.API_PREFIX, tags=["Jobs"])
 app.include_router(reports.router, prefix=settings.API_PREFIX, tags=["Reports"])
 app.include_router(agents.router, prefix=settings.API_PREFIX, tags=["Agents"])
+app.include_router(
+    # protect routes with a token (only for agents)
+    protected_agents.router,
+    prefix=f"{settings.API_PREFIX}/protected",
+    tags=["Agents"],
+)
 
 
 async def generic_error_handler(_request: Request, exc: Exception):
