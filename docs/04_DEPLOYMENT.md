@@ -2,7 +2,7 @@
 
 > **Description**: CI/CD workflows, image publishing, and deployment instructions.
 
-**Maintainer**: Pentulz Team · **Last updated**: 2025-09-02
+**Maintainer**: Pentulz Team · **Last updated**: 2025-09-05
 
 ## 1. Overview
 
@@ -18,7 +18,7 @@ Images are built automatically and pushed to `ghcr.io/pentulz/backend`.
 - **CD Production (tags)**  
   When a Git tag is created (e.g. `v1.0.0`), a production image is pushed:
   - `ghcr.io/pentulz/backend:v1.0.0`
-  - `ghcr.io/pentulzbackend:latest`
+  - `ghcr.io/pentulz/backend:latest`
 
 Here is an illustration of the workflows:
 
@@ -35,71 +35,55 @@ Here is an illustration of the workflows:
    git push origin v1.0.0
    ```
 
-## 4. Run with Docker Compose
+## 4. Docker Compose Deployment
 
 This repository provides a `docker-compose.yml` with two profiles:
 
-- **Development (`dev`)**
+### Development Mode
 
-  ```bash
-  docker compose --profile dev up --build
-  ```
+```bash
+docker compose --profile dev up --build
+```
 
-  - Mounts local code (`.:/app`)
-  - Enables `--reload` for fast development
+- Mounts local code (`.:/app`)
+- Enables `--reload` for fast development
+- Auto-initializes database schema
 
-- **Production (`prod`)**
+### Production Mode
 
-  ```bash
-  docker compose --profile prod up -d
-  ```
+> [!NOTE]
+> Production deployment is handled in the [official Pentulz repository](https://github.com/Pentulz/Pentulz).
 
-  - Runs the published image from GHCR
-  - Use environment variables from `.env`
 
 ## 5. Environment Variables
 
 Create a `.env` file in the project root:
 
+### Development Configuration
+
 ```env
-APP_APP_NAME=Pentulz Backend
-APP_ENVIRONMENT=production
-APP_DEBUG=false
-APP_CORS_ALLOW_ORIGINS='["https://pentulz.xyz"]'
+APP_NAME=Pentulz Backend
+APP_ENVIRONMENT=dev
+APP_DEBUG=true
+APP_CORS_ALLOW_ORIGINS='["http://localhost:3000","http://localhost"]'
+
+APP_DATABASE_HOST=database
+APP_DATABASE_PORT=5432
+APP_DATABASE_USER=postgres
+APP_DATABASE_PASSWORD=postgres
+APP_DATABASE_NAME=pentulz
 ```
 
-These values are loaded automatically by the app.
+
 
 ## 6. OpenAPI Documentation
 
 Once the container is running:
 
-- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
-## 7. Deploy the Production Image with Docker Compose
-
-If you want to deploy the production image using Docker Compose, you can use the following configuration:
-
-```yml
-services:
-  api:
-    image: ghcr.io/pentulz/backend:latest
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
-```
-
-Start the service with:
-
-```bash
-docker compose --profile prod up -d
-```
-
-> For reproducible deployments, replace :latest with a specific version tag (e.g. :v1.0.1).
-
-## 8. Dependency Management (Why Poetry & requirements.txt ?)
+## 7. Dependency Management (Why Poetry & requirements.txt ?)
 
 - **Poetry** is used for local development and CI:
   - Dependency management (`pyproject.toml`)
