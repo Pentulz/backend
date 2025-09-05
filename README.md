@@ -28,6 +28,8 @@
   <a href="#testing">Testing</a>
   ·
   <a href="#linting">Linting</a>
+  ·
+  <a href="#contributing">Contributing</a>
 </p>
 
 <p align="center">
@@ -168,49 +170,8 @@ uvicorn app.main:app --reload
 
 The API will be available at `http://localhost:8000` with interactive docs at `/docs`.
 
-## Production Deployment
-
-### Docker Compose (Production)
-
-For production deployment, use the production profile:
-
-```bash
-# Production deployment
-docker compose --profile prod up -d
-```
-
-**Production configuration:**
-- Uses production-optimized settings
-- Database persistence with volumes
-- Health checks and restart policies
-- Logging configuration
-- Security hardening
-
-### Environment Variables (Production)
-
-Update your `.env` file with production settings:
-
-```bash
-APP_NAME=Pentulz Backend
-APP_ENVIRONMENT=dev
-APP_DEBUG=true
-APP_CORS_ALLOW_ORIGINS='["http://localhost:3000","http://localhost"]'
-
-APP_DATABASE_HOST=database
-APP_DATABASE_PORT=5432
-APP_DATABASE_USER=postgres
-APP_DATABASE_PASSWORD=postgres
-APP_DATABASE_NAME=pentulz
-```
-
-### Production Considerations
-
-- **Database**: Use a managed PostgreSQL service (AWS RDS, Google Cloud SQL, etc.)
-- **Security**: Set strong `SECRET_KEY`, configure CORS properly, use HTTPS
-- **Monitoring**: Add logging, health checks, and monitoring tools
-- **Scaling**: Use load balancers and multiple worker processes
-- **Backups**: Implement regular database backups
-- **Updates**: Use rolling deployments for zero-downtime updates
+>[!IMPORTANT]
+> We advice to use the Docker Compose file to start the application.
 
 ## Testing
 
@@ -244,11 +205,18 @@ See [01_PROJECT_STRUCTURE.md](./docs/01_PROJECT_STRUCTURE.md) for details. At a 
 - `docs/*`: Comprehensive documentation and database UML
 - `tests/*`: Unit and integration tests with coverage reporting
 
-## Useful Links
+## Contributing
 
-- FastAPI documentation: [https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)
-- Pydantic documentation: [https://docs.pydantic.dev/](https://docs.pydantic.dev/)
-- SQLAlchemy documentation: [https://docs.sqlalchemy.org/](https://docs.sqlalchemy.org/)
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+>[!NOTE]
+> If you want to add a new tool, see [03_ADDING_NEW_TOOL.md](./docs/03_ADDING_NEW_TOOL.md) for more information.
 
 ---
 
