@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import List
 
 from pydantic import BaseModel, Field
 
@@ -61,7 +60,7 @@ class AgentAttributes(BaseModel):
     hostname: str = Field(..., description="Agent hostname")
     description: str | None = Field(None, description="Agent description")
     platform: str = Field(..., description="Operating system platform")
-    available_tools: List[str] = Field(
+    available_tools: list[str] = Field(
         default_factory=list, description="List of available tools"
     )
     token: str = Field(..., description="Agent authentication token")
@@ -69,7 +68,7 @@ class AgentAttributes(BaseModel):
         None, description="Last time agent was seen (ISO format)"
     )
     created_at: str = Field(..., description="When agent was created (ISO format)")
-    jobs: List[JobAttributes] | None = Field(None, description="List of agent jobs")
+    jobs: list[JobAttributes] | None = Field(None, description="List of agent jobs")
 
 
 class AgentResponse(BaseModel):
@@ -81,6 +80,6 @@ class AgentResponse(BaseModel):
 class AgentsListResponse(BaseModel):
     """Response model for agents list endpoint"""
 
-    data: List[AgentAttributes] = Field(
+    data: list[AgentAttributes] = Field(
         ..., description="List of agents in JSON:API format"
     )
