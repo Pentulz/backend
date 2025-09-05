@@ -32,6 +32,10 @@ class AgentsService:
         )
         return result.scalar_one_or_none()
 
+    async def get_agent_by_token(self, token: str) -> Agents | None:
+        result = await self.db.execute(select(Agents).where(Agents.token == token))
+        return result.scalar_one_or_none()
+
     async def get_agent_by_hostname(self, hostname: str) -> Optional[Agents]:
         result = await self.db.execute(
             select(Agents).where(Agents.hostname == hostname)

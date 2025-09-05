@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.core.response import create_success_response_list
 from app.schemas.response_models import DetailedInternalServerError, ToolsResponse
