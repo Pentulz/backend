@@ -108,7 +108,7 @@ class ReportsService:
             # Reconstruct command from new action format
             cmd = job.action.get("cmd", "")
             args = job.action.get("args", [])
-            command = f"{cmd} {' '.join(args)}" if cmd and args else ""
+            command = f"{cmd} {' '.join(map(str, args))}" if cmd and args else ""
 
             # Parse job results using appropriate tool parser
             parsed_result = await self._parse_job_results(
