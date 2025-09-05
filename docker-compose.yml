@@ -19,7 +19,7 @@ services:
 
   # API Development
   api:
-    image: ghcr.io/pentulz/pentulz-backend:latest
+    image: ghcr.io/pentulz/backend:latest
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -48,7 +48,7 @@ services:
 
   # API Production
   api-prod:
-    image: ghcr.io/pentulz/pentulz-backend:latest
+    image: ghcr.io/pentulz/backend:latest
     env_file:
       - .env
     ports:
