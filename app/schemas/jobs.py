@@ -52,11 +52,11 @@ class Job(BaseModel):
     id: uuid.UUID
     name: str
     description: Optional[str] = None
-    agent_id: uuid.UUID
+    agent_id: uuid.UUID | None = None
     action: JobActionResponse
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    created_at: datetime
+    created_at: datetime | None = None
     results: Optional[str] = None
     success: Optional[bool] = None
 
