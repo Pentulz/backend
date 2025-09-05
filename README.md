@@ -216,7 +216,7 @@ Contributions are what make the open source community such an amazing place to l
 5. Open a Pull Request
 
 >[!NOTE]
-> If you want to add a new tool, see [03_ADDING_NEW_TOOL.md](./docs/03_ADDING_NEW_TOOL.md) for more information.
+> To have a better understanding of the project, you can read the documentation in the [docs](./docs) folder. (How to add a new tool, how to deploy, project structure, etc.)
 
 ---
 

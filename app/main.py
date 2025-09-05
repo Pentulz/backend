@@ -68,7 +68,7 @@ app.add_middleware(
 # Include routers
 # Publish /tools on both /api/v1 and /api/v1/protected prefixes (frontend and agent routes)
 app.include_router(
-    system.router, prefix=f"{settings.API_PREFIX}/protected", tags=["System"]
+    system.router, prefix=f"{settings.API_PREFIX}/protected", tags=["Protected"]
 )
 app.include_router(system.router, prefix=settings.API_PREFIX, tags=["System"])
 app.include_router(health.router, prefix=settings.API_PREFIX, tags=["Health"])
