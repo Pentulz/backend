@@ -139,56 +139,6 @@ async def update_agent(
         return create_error_response("500", "Internal Server Error", str(e), 500)
 
 
-# @router.patch(
-#     "/capabilities",
-#     response_model=AgentResponse,
-#     responses={
-#         200: {"description": "Agent updated successfully"},
-#         400: {
-#             "model": DetailedBadRequestError,
-#             "description": "Bad request - invalid data",
-#         },
-#         404: {"model": DetailedNotFoundError, "description": "Agent not found"},
-#         500: {
-#             "model": DetailedInternalServerError,
-#             "description": "Internal server error",
-#         },
-#     },
-# )
-# async def set_agent_capabilities(
-#     body: AgentUpdate,
-#     agent=Depends(verify_agent_token),
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     """
-#     Update an agent
-#     """
-#
-#     try:
-#         agent_service = AgentsService(db)
-#         agent_from_db = await agent_service.update_agent(agent.id, body)
-#
-#         updated_agent = Agent(
-#             id=agent_from_db.id,
-#             name=agent_from_db.name,
-#             hostname=agent_from_db.hostname,
-#             description=agent_from_db.description,
-#             platform=agent_from_db.platform,
-#             available_tools=agent_from_db.available_tools,
-#             token=agent_from_db.token,
-#             last_seen_at=agent_from_db.last_seen_at,
-#             created_at=agent_from_db.created_at,
-#         )
-#
-#         response_json = updated_agent.model_dump(mode="json")
-#         return create_success_response("agents", str(agent.id), response_json)
-#
-#     except UpdateError as e:
-#         return create_error_response("400", "Bad Request", str(e), 400)
-#     except Exception as e:
-#         return create_error_response("500", "Internal Server Error", str(e), 500)
-
-
 @router.get(
     "/jobs",
     response_model=JobsListResponse,
@@ -239,7 +189,11 @@ async def get_agent_jobs(
             Job(
                 id=job.id,
                 name=job.name,
-                action=updated_action,
+                action=JobActionResponse(
+                    cmd=updated_action["cmd"],
+                    variant=updated_action["variant"],
+                    args=[str(v) for v in updated_action["args"]],
+                ),
                 agent_id=job.agent_id,
                 description=job.description,
                 results=job.results,
@@ -275,10 +229,6 @@ async def update_job(
     agent=Depends(verify_agent_token),
     db: AsyncSession = Depends(get_db),
 ):
-    # async def get_agent_jobs(
-    #     agent=Depends(verify_agent_token),
-    #     db: AsyncSession = Depends(get_db),
-    # ):
     """
     Update a job
     """
